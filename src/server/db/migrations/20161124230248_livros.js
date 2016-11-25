@@ -5,7 +5,6 @@ exports.up = function(knex, Promise) {
       table.integer('liv_text_id').notNullable();
       table.integer('liv_posicao').notNullable();
       table.string('liv_nome').notNullable();
-      table.string('liv_abbrv').notNullable();
   })
 };
 
