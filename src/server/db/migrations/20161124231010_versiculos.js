@@ -1,7 +1,7 @@
 
 exports.up = function(knex, Promise) {
     return Promise.all([
-        knex.schema.createTable('versiculos', (table) => {
+        knex.schema.createTableIfNotExists('versiculos', (table) => {
             table.increments('ver_id');
             table.integer('ver_vrs_id').unsigned().notNullable();
             table.integer('ver_liv_id').unsigned().notNullable();

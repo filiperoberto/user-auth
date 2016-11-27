@@ -13,4 +13,8 @@ export class VersionsRepository {
         return knex.select().from('versoes');
     }
 
+    public getById(id : number) {
+        return knex.select().from('versoes').where('vrs_id',id);
+    }
+
 }

@@ -20,8 +20,23 @@ class VersionsRouter {
         })
     }
 
+    private getById(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt(req.params.id);
+
+        this.repository.getById(id).then( (version : any[]) => {
+            if(version.length > 0) {
+                res.send(version.pop());    
+            }
+            else {
+                res.status(404);
+                res.send();
+            }
+        } )
+    }
+
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
+        this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
     }
 }
 

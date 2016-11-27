@@ -1,9 +1,8 @@
+require('dotenv').config();
 import * as http from 'http';
 import * as debug from 'debug';
 
 import App from './App';
-
-require('dotenv').config();
 
 debug('ts-express:server');
 
