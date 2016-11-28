@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 describe('routes : Versicles',() => {
 
-    beforeEach(done => {
+    before(done => {
         knex.seed.run().then(() => done());
     });
 
@@ -28,7 +28,7 @@ describe('routes : Versicles',() => {
                     should.not.exist(err);
                     res.should.have.status(200);
                     expect(res.body).to.be.an('array');
-                    expect(res.body).to.have.length(4);
+                    expect(res.body).to.have.length(5);
                     res.body[0].ver_texto.should.eql('No princípio criou Deus os céus e a terra.');
                     expect(res.body[0].vrs_id).to.be.eql(undefined);
                     done();
@@ -61,7 +61,7 @@ describe('routes : Versicles',() => {
                     should.not.exist(err);
                     res.should.have.status(200);
                     expect(res.body).to.be.an('array');
-                    expect(res.body).to.have.length(3);
+                    expect(res.body).to.have.length(4);
                     res.body[0].ver_texto.should.eql('No princípio criou Deus os céus e a terra.')
                     done();
                 })
@@ -79,6 +79,103 @@ describe('routes : Versicles',() => {
                     expect(res.body).to.be.an('array');
                     expect(res.body).to.have.length(1);
                     res.body[0].ver_texto.should.eql('Ora, estes são os nomes dos filhos de Israel, que entraram no Egito; entraram com Jacó, cada um com a sua família:')
+                    done();
+                })
+        })
+    })
+
+    describe('GET api/v1/versicles/ara/gn/1',() => {
+
+        it('responds with versicles from first chapter ara genesis',done => {
+
+            chai.request(app).get('/api/v1/versicles/ara/gn/1')
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.have.length(3);
+                    res.body[0].ver_texto.should.eql('No princípio criou Deus os céus e a terra.')
+                    done();
+                })
+        })
+    })
+
+    describe('GET api/v1/versicles/ara/gn/2',() => {
+
+        it('responds with versicles from second chapter ara genesis',done => {
+
+            chai.request(app).get('/api/v1/versicles/ara/gn/2')
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.have.length(1);
+                    res.body[0].ver_texto.should.eql('Foi-se um homem da casa de Levi e casou com uma filha de Levi.')
+                    done();
+                })
+        })
+    })
+
+    describe('GET api/v1/versicles/ara/gn/1/1',() => {
+
+        it('responds with versicles from first chapter first versicle ara genesis',done => {
+
+            chai.request(app).get('/api/v1/versicles/ara/gn/1/1')
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.have.length(1);
+                    res.body[0].ver_texto.should.eql('No princípio criou Deus os céus e a terra.')
+                    done();
+                })
+        })
+    })
+
+    describe('GET api/v1/versicles/ara/gn/1/2',() => {
+
+        it('responds with versicles from first chapter second versicle ara genesis',done => {
+
+            chai.request(app).get('/api/v1/versicles/ara/gn/1/2')
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.have.length(1);
+                    res.body[0].ver_texto.should.eql('A terra era sem forma e vazia; e havia trevas sobre a face do abismo, mas o Espírito de Deus pairava sobre a face das águas.')
+                    done();
+                })
+        })
+    })
+
+    describe('GET api/v1/versicles/ara/gn/1/1-2',() => {
+
+        it('responds with versicles from first chapter from first to second versicles ara genesis',done => {
+
+            chai.request(app).get('/api/v1/versicles/ara/gn/1/1-2')
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.have.length(2);
+                    res.body[0].ver_texto.should.eql('No princípio criou Deus os céus e a terra.')
+                    res.body[1].ver_texto.should.eql('A terra era sem forma e vazia; e havia trevas sobre a face do abismo, mas o Espírito de Deus pairava sobre a face das águas.')
+                    done();
+                })
+        })
+    })
+
+    describe('GET api/v1/versicles/ara/gn/1/1-',() => {
+
+        it('responds with versicles from first chapter first versicle ara genesis',done => {
+
+            chai.request(app).get('/api/v1/versicles/ara/gn/1/1-')
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.have.length(1);
+                    res.body[0].ver_texto.should.eql('No princípio criou Deus os céus e a terra.')
                     done();
                 })
         })
