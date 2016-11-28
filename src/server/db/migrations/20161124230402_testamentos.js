@@ -13,5 +13,11 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-    return knex.schema.dropTable('testamentos');
+    return Promise.all([
+        knex.schema.table('livros',table => {
+            table.dropForeign('liv_tes_id')
+        }),
+        knex.schema.dropTable('testamentos')
+
+    ])
 };

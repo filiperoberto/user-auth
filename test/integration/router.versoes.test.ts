@@ -17,7 +17,7 @@ describe('routes : Versions',() => {
         /*return knex.migrate.rollback()
             .then(() => { return knex.migrate.latest(); })
             .then(() => { return knex.seed.run();  })*/
-        knex.seed.run().then(() => done()) ;
+        knex.seed.run().then(() => done());
     });
 
     afterEach(() => {

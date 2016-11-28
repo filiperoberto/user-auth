@@ -1,9 +1,11 @@
 
 exports.seed = function(knex, Promise) {
-    return Promise.all([
-        knex('versiculos').del(),
-        knex('livros').del(),
-        knex('testamentos').del(),
-        knex('versoes').del()
-    ])
+    return knex('versiculos').del().then(() => {
+        return knex('livros').del().then(() => {
+            return Promise.all([
+                knex('testamentos').del(),
+                knex('versoes').del()
+            ])
+        })
+    })
 };
