@@ -39,6 +39,7 @@
     "typescript": "^2.0.6"
   },
   "dependencies": {
+    "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
     "debug": "^2.2.0",
     "dotenv": "^2.0.0",

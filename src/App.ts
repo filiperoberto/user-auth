@@ -4,6 +4,8 @@ import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import VersionsRouter from './routes/VersionsRouter';
 import VersiclesRouter from './routes/VersiclesRouter';
+import UsersRouter from './routes/UsersRouter';
+import AuthRouter from './routes/AuthRouter';
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -40,6 +42,8 @@ class App {
     this.express.use('/', router);
     this.express.use('/api/v1/versions', VersionsRouter);
     this.express.use('/api/v1/versicles', VersiclesRouter);
+    this.express.use('/api/v1/users', UsersRouter);
+    this.express.use('/api/v1/auth', AuthRouter);
   }
 
 }
