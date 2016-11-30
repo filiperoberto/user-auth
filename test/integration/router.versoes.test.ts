@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 describe('routes : Versions',() => {
 
-    beforeEach(done => {
+    before(done => {
         /*return knex.migrate.rollback()
             .then(() => { return knex.migrate.latest(); })
             .then(() => { return knex.seed.run();  })*/
