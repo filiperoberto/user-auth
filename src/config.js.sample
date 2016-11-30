@@ -1,0 +1,4 @@
+module.exports = {
+    secret : 'rustmanftw',
+    salt : 'rzl5wxovlzbjlcvljl1vuxuyaxrhfpvkq58pvdzg'
+}

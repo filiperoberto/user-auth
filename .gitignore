@@ -3,3 +3,4 @@ node_modules
 .vscode
 .env
 /typings
+src/config.js

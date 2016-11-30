@@ -31,6 +31,7 @@ describe('routes : Auth',() => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.should.have.status(200);
+                    expect(res.body).to.have.property('token');
                     done();
                 })
         })
@@ -44,7 +45,7 @@ describe('routes : Auth',() => {
                 })
                 .end((err, res) => {
                     should.exist(err);
-                    res.should.have.status(404);
+                    res.should.have.status(401);
                     done();
                 })
         })

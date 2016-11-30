@@ -7,6 +7,18 @@ const fs = require('fs');
 
 const tsProject = ts.createProject('tsconfig.json');
 
+function copyFileIfNotExists(filename, sampleFilename) {
+	fs.stat(filename ,(err, stat) => {
+    	if(err == null) {
+    		gulp.src(filename).pipe(gulp.dest('dist'));
+    	} else {
+        	gulp.src(sampleFilename)
+        		.pipe(rename(filename))
+        		.pipe(gulp.dest('dist'));
+    	}
+	});
+}
+
 gulp.task('scripts', () => {
   const tsResult = tsProject.src()
   .pipe(tsProject());
@@ -22,20 +34,15 @@ gulp.task('clean',() => {
 });
 
 gulp.task('build',done => {
-	runSequence('clean','scripts','env',done);
+	runSequence('clean','scripts','env','conf',done);
 })
 
 gulp.task('env',() => {
+	copyFileIfNotExists('.env','.env_sample');
+})
 
-	fs.stat('.env',(err, stat) => {
-    	if(err == null) {
-    		gulp.src('.env').pipe(gulp.dest('dist'));
-    	} else {
-        	gulp.src('.env_sample')
-        		.pipe(rename('.env'))
-        		.pipe(gulp.dest('dist'));
-    	}
-	});
+gulp.task('conf',() => {
+	copyFileIfNotExists('src/config.js','src/config.js.sample');
 })
 
 gulp.task('default', ['watch']);
