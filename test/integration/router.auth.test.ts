@@ -68,6 +68,21 @@ describe('routes : Auth',() => {
                 })
         })
 
+        it('Should successfuly login after register',done => {
+
+            chai.request(app).post('/api/v1/auth/login')
+                .send({
+                    username: 'filipesilva@outlook.com',
+                    password: '12345'
+                })
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    expect(res.body).to.have.property('token');
+                    done();
+                })
+        })
+
     })
 
 })

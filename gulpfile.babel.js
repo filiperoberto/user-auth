@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const tsProject = ts.createProject('tsconfig.json');
 
-function copyFileIfNotExists(filename, sampleFilename) {
+function copyFileIfNotExists(filename, sampleFilename, dest = 'dist') {
 	fs.stat(filename ,(err, stat) => {
     	if(err == null) {
     		gulp.src(filename).pipe(gulp.dest('dist'));
@@ -42,7 +42,15 @@ gulp.task('env',() => {
 })
 
 gulp.task('conf',() => {
-	copyFileIfNotExists('src/config.js','src/config.js.sample');
+  fs.stat('src/config.js' ,(err, stat) => {
+      if(err == null) {
+        gulp.src('src/config.js').pipe(gulp.dest('dist'));
+      } else {
+          gulp.src('src/config.js.sample')
+            .pipe(rename('config.js'))
+            .pipe(gulp.dest('dist'));
+      }
+  });
 })
 
 gulp.task('default', ['watch']);

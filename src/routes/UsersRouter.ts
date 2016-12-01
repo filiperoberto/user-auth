@@ -1,15 +1,12 @@
+import {AuthoziredRouter} from './AuthoziredRouter';
 import {Router, Request, Response, NextFunction} from 'express';
-import {UsersRepository} from '../server/db/queries/UsersRepository';
+//import {UsersRepository} from '../server/db/queries/UsersRepository';
 import * as Knex from 'knex';
 
-
-class UsersRouter {
-    router: Router;
-    private repository : UsersRepository;
+class UsersRouter extends AuthoziredRouter {
 
     constructor() {
-        this.router = Router();
-        this.repository = new UsersRepository();
+        super();
     }
 
     private getAll(req: Request, res: Response, next: NextFunction) {
@@ -24,8 +21,7 @@ class UsersRouter {
 
 }
 
-
 const exportRoutes = new UsersRouter();
 exportRoutes.init();
 
-export default exportRoutes.router;
+export default exportRoutes.getRouter();
