@@ -1,6 +1,5 @@
 import {Router, Request, Response, NextFunction} from 'express';
 import {VersiclesRepository} from '../server/db/queries/VersiclesRepository';
-import * as Knex from 'knex';
 
 class VersiclesRouter {
     router: Router;

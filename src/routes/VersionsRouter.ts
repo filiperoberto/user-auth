@@ -1,6 +1,5 @@
 import {Router, Request, Response, NextFunction} from 'express';
 import {VersionsRepository} from '../server/db/queries/VersionsRepository';
-import * as Knex from 'knex';
 
 class VersionsRouter {
     router: Router;

@@ -4,6 +4,7 @@ import * as Knex from 'knex';
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import chaiHttp = require('chai-http');
+import {LoginUtil} from './util/LoginUtil'
 
 import app from '../../src/App';
 
@@ -13,8 +14,16 @@ const expect = chai.expect;
 
 describe('routes : Users',() => {
 
+    let token : string;
+
     before(done => {
-        knex.seed.run().then(() => done());
+
+        knex.seed.run().then(() => {
+            LoginUtil.login().then(t => {
+                token = t;
+                done();
+            })
+        });
     });
 
     //afterEach(() => {});
@@ -24,6 +33,9 @@ describe('routes : Users',() => {
         it('Should return all users without personal information',done => {
 
             chai.request(app).get('/api/v1/users')
+                .send({
+                    token : token
+                })
                 .end((err, res) => {
                     should.not.exist(err);
                     res.should.have.status(200);
@@ -38,6 +50,15 @@ describe('routes : Users',() => {
                 })
         })
 
+        it('Should fail authorization',done => {
+
+            chai.request(app).get('/api/v1/users')
+                .end((err, res) => {
+                    should.exist(err);
+                    res.should.have.status(403);
+                    done();
+                })
+        })
     })
 
 })

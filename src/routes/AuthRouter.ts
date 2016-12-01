@@ -1,6 +1,5 @@
 import {Router, Request, Response, NextFunction} from 'express';
 import {UsersRepository} from '../server/db/queries/UsersRepository';
-import * as Knex from 'knex';
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 

@@ -1,9 +1,7 @@
-import {AuthoziredRouter} from './AuthoziredRouter';
+import {TokenChecker} from './TokenChecker';
 import {Router, Request, Response, NextFunction} from 'express';
-//import {UsersRepository} from '../server/db/queries/UsersRepository';
-import * as Knex from 'knex';
 
-class UsersRouter extends AuthoziredRouter {
+class UsersRouter extends TokenChecker {
 
     constructor() {
         super();
