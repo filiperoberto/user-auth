@@ -31,8 +31,25 @@ class AuthRouter {
         })
     }
 
+    private register(req: Request, res: Response, next: NextFunction) {
+        const username = req.body.username;
+        const password = req.body.password;
+
+        this.repository.register(username, password).then( id => {
+
+            this.repository.getById(id).then( user => {
+
+                let token = this.getToken(user[0]);
+
+                res.status(201);
+                res.json({ token : token});
+            })
+        })
+    }
+
     public init() {
         this.router.post('/login',(req: Request, res: Response, next: NextFunction) => this.authenticate(req,res,next));
+        this.router.post('/register',(req: Request, res: Response, next: NextFunction) => this.register(req,res,next));
     }
 
     private getToken(user) : string {

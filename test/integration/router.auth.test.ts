@@ -49,6 +49,24 @@ describe('routes : Auth',() => {
                     done();
                 })
         })
+    })
+
+    describe('POST /api/v1/auth/register',() => {
+
+        it('Should successfuly create user and return token',done => {
+
+            chai.request(app).post('/api/v1/auth/register')
+                .send({
+                    username: 'filipesilva@outlook.com',
+                    password: '12345'
+                })
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.should.have.status(201);
+                    expect(res.body).to.have.property('token');
+                    done();
+                })
+        })
 
     })
 

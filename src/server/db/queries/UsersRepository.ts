@@ -9,11 +9,23 @@ export class UsersRepository {
         return knex.select('id','role','created','modified','name','website','description','picture','reputition').from('ck_users');
     }
 
-    public getUserByUsernameAndPassword(username : string, password : string) {
+    public getById(id : number) {
+        return knex.select('id','role','created','modified','name','website','description','picture','reputition').from('ck_users').where({'id':id});
+    }
 
-        const salt = config.salt;
-        const hash = sha1(salt+password);
+    public getUserByUsernameAndPassword(username : string, password : string) {
+        const hash = this.hash(password);
         return knex.select('id','role','created','modified','name','website','description','picture','reputition').from('ck_users').where({'username' : username, 'password' : hash}).limit(1);
+    }
+
+    public register(username : string, password : string) {
+        const hash = this.hash(password);
+        return knex('ck_users').insert([{ username : username , password : hash, created : knex.fn.now(), modified : knex.fn.now(), email : username}]);
+    }
+
+    private hash(password : string) : string {
+        const salt = config.salt;
+        return sha1(salt+password);
     }
 
 }
