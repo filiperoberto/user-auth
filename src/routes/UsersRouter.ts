@@ -17,6 +17,14 @@ class UsersRouter extends TokenChecker {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
     }
 
+    protected getIgnoredPaths() : string[] {
+        return [];
+    }
+
+    protected getIgnoredMethods() : string[] {
+        return [];
+    }
+
 }
 
 const exportRoutes = new UsersRouter();
