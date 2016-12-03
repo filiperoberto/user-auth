@@ -52,6 +52,19 @@ export abstract class TokenChecker {
         }
     }
 
+    protected getLoggedUserId(req: Request) : string {
+        return req['decoded'].id;
+    }
+
+    protected getIdFromRequest(req: Request) {
+        const id = req.params.id;
+
+        if(id === 'me') {
+            return this.getLoggedUserId(req);
+        }
+        return id;
+    }
+
     //TODO - Testar
     private bypass(req: Request) : boolean {
         return this.getIgnoredPaths().indexOf(req.path) !== -1 || this.getIgnoredMethods().indexOf(req.method) !== -1;

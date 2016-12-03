@@ -8,7 +8,6 @@ class VersiclesRouter {
     constructor() {
         this.router = Router();
         this.repository = new VersiclesRepository();
-        //this.init();
     }
 
     private getByVersion(req: Request, res: Response, next: NextFunction) {
@@ -16,7 +15,7 @@ class VersiclesRouter {
 
         this.repository.getByVersion(vrs).then( (versicles : any[]) => {
             res.send(versicles);
-        })
+        }).catch( er => res.sendStatus(500))
     }
 
     private getByVersionAndBook(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +24,7 @@ class VersiclesRouter {
 
         this.repository.getByVersionAndBook(vrs,liv).then( (versicles : any[]) => {
             res.send(versicles);
-        })
+        }).catch( er => res.sendStatus(500))
     }
 
     private getByVersionAndBookAndChapter(req: Request, res: Response, next: NextFunction) {
@@ -35,7 +34,7 @@ class VersiclesRouter {
 
         this.repository.getByVersionAndBookAndChapter(vrs, liv, cha).then( (versicles : any[]) => {
             res.send(versicles);
-        })
+        }).catch( er => res.sendStatus(500))
     }
 
     private getByVersionAndBookAndChapterAndVersicle(req: Request, res: Response, next: NextFunction) {
@@ -51,13 +50,13 @@ class VersiclesRouter {
 
             this.repository.getByVersionAndBookAndChapterAndVersicles(vrs, liv, cha, [verIds[0], verIds[1]]).then( (versicles : any[]) => {
                 res.send(versicles);
-            })
+            }).catch( er => res.sendStatus(500))
             
         }
         else {
             this.repository.getByVersionAndBookAndChapterAndVersicle(vrs, liv, cha, ver).then( (versicles : any[]) => {
                 res.send(versicles);
-            })
+            }).catch( er => res.sendStatus(500))
         }
     }
 

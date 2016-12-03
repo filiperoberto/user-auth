@@ -14,15 +14,8 @@ const expect = chai.expect;
 describe('routes : Versions',() => {
 
     before(done => {
-        /*return knex.migrate.rollback()
-            .then(() => { return knex.migrate.latest(); })
-            .then(() => { return knex.seed.run();  })*/
         knex.seed.run().then(() => done());
-    });
-
-    afterEach(() => {
-        //return knex.migrate.rollback()
-    });
+    })
 
     describe('GET api/v1/versions',() => {
 

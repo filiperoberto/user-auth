@@ -16,7 +16,7 @@ class VersionsRouter {
     private getAll(req: Request, res: Response, next: NextFunction) {
         this.repository.getAll().then( versions => {
             res.send(versions);
-        })
+        }).catch( er => res.sendStatus(500))
     }
 
     private getById(req: Request, res: Response, next: NextFunction) {
@@ -30,7 +30,7 @@ class VersionsRouter {
                 res.status(404);
                 res.send();
             }
-        } )
+        }).catch( er => res.sendStatus(500))
     }
 
     public init() {

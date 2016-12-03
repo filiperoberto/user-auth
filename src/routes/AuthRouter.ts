@@ -1,15 +1,12 @@
 import {Router, Request, Response, NextFunction} from 'express';
-import {UsersRepository} from '../server/db/queries/UsersRepository';
+import {TokenChecker} from './TokenChecker';
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 
-class AuthRouter {
-    router: Router;
-    private repository : UsersRepository;
+class AuthRouter extends TokenChecker {
 
     constructor() {
-        this.router = Router();
-        this.repository = new UsersRepository();
+        super();
     }
 
     private authenticate(req: Request, res: Response, next: NextFunction) {
@@ -27,7 +24,7 @@ class AuthRouter {
                 res.status(401);
                 res.json({});
             }
-        })
+        }).catch( er => res.sendStatus(500));
     }
 
     private register(req: Request, res: Response, next: NextFunction) {
@@ -43,12 +40,22 @@ class AuthRouter {
                 res.status(201);
                 res.json({ token : token});
             })
-        })
+        }).catch( er => res.sendStatus(500))
+    }
+
+    private changePassword(req: Request, res: Response, next: NextFunction) {
+        const password = req.body.password;
+        const id = this.getLoggedUserId(req);
+
+        this.repository.changePassword(id, password)
+            .then( data => res.sendStatus(201))
+            .catch( er => res.sendStatus(500))
     }
 
     public init() {
         this.router.post('/login',(req: Request, res: Response, next: NextFunction) => this.authenticate(req,res,next));
         this.router.post('/register',(req: Request, res: Response, next: NextFunction) => this.register(req,res,next));
+        this.router.post('/password',(req: Request, res: Response, next: NextFunction) => this.changePassword(req,res,next));
     }
 
     private getToken(user) : string {
@@ -58,10 +65,17 @@ class AuthRouter {
         });
     }
 
-}
+    protected getIgnoredPaths() : string[] {
+        return ['/login','/register'];
+    }
 
+    protected getIgnoredMethods() : string[] {
+        return [];
+    }
+
+}
 
 const exportRoutes = new AuthRouter();
 exportRoutes.init();
 
-export default exportRoutes.router;
+export default exportRoutes.getRouter();
