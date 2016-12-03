@@ -6,6 +6,8 @@ import VersionsRouter from './routes/VersionsRouter';
 import VersiclesRouter from './routes/VersiclesRouter';
 import UsersRouter from './routes/UsersRouter';
 import AuthRouter from './routes/AuthRouter';
+import TagsRouter from './routes/TagsRouter';
+import PeopleRouter from './routes/PeopleRouter';
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -44,8 +46,9 @@ class App {
     this.express.use('/api/v1/versicles', VersiclesRouter);
     this.express.use('/api/v1/users', UsersRouter);
     this.express.use('/api/v1/auth', AuthRouter);
+    this.express.use('/api/v1/tags', TagsRouter);
+    this.express.use('/api/v1/people', PeopleRouter);
   }
-
 }
 
 export default new App().express;

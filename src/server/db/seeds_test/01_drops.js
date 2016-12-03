@@ -5,7 +5,8 @@ exports.seed = function(knex, Promise) {
             return Promise.all([
                 knex('testamentos').del(),
                 knex('versoes').del(),
-                knex('ck_users').del()
+                knex('ck_users').del(),
+                knex('ck_tags').del()
             ])
         })
     })
