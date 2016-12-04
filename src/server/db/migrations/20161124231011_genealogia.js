@@ -1,4 +1,3 @@
-
 exports.up = function(knex, Promise) {
     return Promise.all([
         knex.schema.createTableIfNotExists('ck_comments', (table) => {
@@ -10,14 +9,15 @@ exports.up = function(knex, Promise) {
             table.dateTime('modified');
             table.integer('visible').defaultTo(1);
         }),
-        knex.schema.createTableIfNotExists('ck_conjuges',table => {
+        knex.schema.createTableIfNotExists('ck_conjuges', table => {
             table.integer('marido').unsigned();
             table.integer('mulher').unsigned();
         }),
-        knex.schema.createTableIfNotExists('ck_pessoas',table => {
+        knex.schema.createTableIfNotExists('ck_pessoas', table => {
             table.increments('id').primary();
-            table.string('nome').notNullable();
+            table.integer('last_version').unsigned().defaultTo(1);
             //TODO - remover as seguintes colunas em migração posterior
+            table.string('nome').notNullable();
             table.integer('idade_morte').unsigned();
             table.integer('pai').unsigned();
             table.integer('mae').unsigned();
@@ -28,7 +28,7 @@ exports.up = function(knex, Promise) {
             table.dateTime('created');
             table.dateTime('modified');
         }),
-        knex.schema.createTableIfNotExists('ck_post_to_tag',table => {
+        knex.schema.createTableIfNotExists('ck_post_to_tag', table => {
             table.integer('post').unsigned().notNullable();
             table.integer('tag').unsigned().notNullable();
         }),
@@ -41,12 +41,12 @@ exports.up = function(knex, Promise) {
             table.boolean('public').defaultTo(0);
             table.integer('user_id');
         }),
-        knex.schema.createTableIfNotExists('ck_tags',table => {
+        knex.schema.createTableIfNotExists('ck_tags', table => {
             table.increments('id').primary();
             table.string('classe').notNullable().defaultTo('0');
             table.string('texto').notNullable();
         }),
-        knex.schema.createTableIfNotExists('ck_users',table => {
+        knex.schema.createTableIfNotExists('ck_users', table => {
             table.increments('id').primary();
             table.string('username').notNullable();
             table.string('password').notNullable();
@@ -60,7 +60,7 @@ exports.up = function(knex, Promise) {
             table.integer('reputition').defaultTo(0);
             table.string('email');
         }),
-        knex.schema.createTableIfNotExists('ck_versions',table => {
+        knex.schema.createTableIfNotExists('ck_versions', table => {
             table.increments('id').primary();
             table.integer('version_number').notNullable().defaultTo(1);
             table.text('citacoes');
@@ -87,14 +87,14 @@ exports.up = function(knex, Promise) {
             table.integer('pai').unsigned();
             table.integer('mae').unsigned();
         }),
-        knex.schema.table('ck_comments',table => {
+        knex.schema.table('ck_comments', table => {
             table.foreign('user_id').references('ck_users.id');
         }),
-        knex.schema.table('ck_conjuges',table => {
+        knex.schema.table('ck_conjuges', table => {
             table.foreign('marido').references('ck_pessoas.id');
             table.foreign('mulher').references('ck_pessoas.id');
         }),
-        knex.schema.table('ck_versions',table => {
+        knex.schema.table('ck_versions', table => {
             table.foreign('id_pessoa').references('ck_pessoas.id');
             table.foreign('user_id').references('ck_users.id');
         })
@@ -102,5 +102,22 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-    return knex.schema.dropTable('ck_comments');
+    return knex.schema.dropTable('ck_conjuges').then(() => {
+
+        return knex.schema.dropTable('ck_post_to_tag').then(() => {
+
+            return Promise.all([
+                knex.schema.dropTable('ck_posts'),
+                knex.schema.dropTable('ck_tags'),
+                knex.schema.dropTable('ck_comments')
+            ]).then(() => {
+                return knex.schema.dropTable('ck_versions').then(() => {
+                    return Promise.all([
+                        knex.schema.dropTable('ck_pessoas'),
+                        knex.schema.dropTable('ck_users')
+                    ])
+                })
+            })
+        })
+    })
 };
