@@ -53,6 +53,8 @@ describe('routes : Tags',() => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.should.have.status(200);
+
+
                     expect(res.body).to.be.an('object');
                     expect(res.body).to.have.property('nome');
                     expect(res.body).to.have.property('citacoes');
