@@ -1,6 +1,7 @@
 node_modules
 /dist
-.vscode
 .env
 /typings
 src/config.js
+npm-debug.log
+package-lock.json

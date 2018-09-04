@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path: __dirname + '/.env'});
 import * as http from 'http';
 import * as debug from 'debug';
 
@@ -42,4 +42,7 @@ function onListening(): void {
   let addr = server.address();
   let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
+  let msg = `Listening on ${bind}`;
+  console.log(msg);
+  debug(msg);
 }
