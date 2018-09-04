@@ -79,6 +79,11 @@ export abstract class TokenChecker {
         return req.headers['authorization'] ? (req.headers['authorization'] as any).split(' ')[1] : undefined;
     }
 
+    protected isAdmin(req: Request) {
+        const role = this.getLoggedRole(req);
+        return role === 'admin';
+    }
+
     protected getFilter(req: Request, defaultLimit?: number) : Filter {
         let filter = new Filter();
 
@@ -142,8 +147,11 @@ export abstract class TokenChecker {
         return id;
     }
 
-    protected sendUnauthorizedMessage() {
-        
+    protected sendUnauthorizedMessage(res: Response) {
+        return res.status(401).send({
+            success: false,
+            message: 'User not authorized.'
+        });
     }
 
     //TODO - Testar

@@ -9,14 +9,10 @@ class UsersRouter extends TokenChecker {
 
     private getAll(req: Request, res: Response, next: NextFunction) {
 
-        const role = this.getLoggedRole(req);
         const filter = this.getFilter(req);
 
-        if(role !== 'admin') {
-            return res.status(401).send({
-                success: false,
-                message: 'User not authorized.'
-            });
+        if(!this.isAdmin(req)) {
+            return this.sendUnauthorizedMessage(res);
         }
 
         this.repository.getAll(filter).then(users => {
@@ -29,6 +25,11 @@ class UsersRouter extends TokenChecker {
 
     private getById(req: Request, res: Response, next: NextFunction) {
         const id = this.getIdFromRequest(req);
+        const loggedUser = this.getLoggedUserId(req);
+
+        if(id != loggedUser && !this.isAdmin(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
 
         this.repository.getById(id).then(users => {
             if(users && users.length > 0) {
