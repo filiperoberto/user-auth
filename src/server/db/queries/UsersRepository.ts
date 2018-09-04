@@ -9,6 +9,10 @@ export class UsersRepository {
         return knex.select('id','role','created','modified','name','website','description','picture','reputition').from('ck_users');
     }
 
+    public count() {
+        return knex.count('id as count').from('ck_users');
+    }
+
     public getById(id : number) {
         return knex.select('id','role','created','modified','name','website','description','picture','reputition').from('ck_users').where({'id':id});
     }

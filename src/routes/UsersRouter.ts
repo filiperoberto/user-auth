@@ -8,8 +8,21 @@ class UsersRouter extends TokenChecker {
     }
 
     private getAll(req: Request, res: Response, next: NextFunction) {
+
+        const role = this.getLoggedRole(req);
+
+        if(role !== 'admin') {
+            return res.status(401).send({
+                success: false,
+                message: 'User not authorized.'
+            });
+        }
+
         this.repository.getAll().then(users => {
-            res.send(users);
+
+            return this.repository.count().then(count => {
+                res.send({ count : count[0].count , content : users});
+            }) 
         }).catch( er => res.sendStatus(500))
     }
 

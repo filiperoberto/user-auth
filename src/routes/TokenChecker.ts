@@ -28,7 +28,7 @@ export abstract class TokenChecker {
     }
 
     private checkToken(req: Request, res: Response, next: NextFunction) {
-        let token = req.body.token || req.query.token || req.headers['x-access-token'];
+        let token = req.body.token || req.query.token || req.headers['x-access-token'] || this.getBearerToken(req);
         let secret = config.secret;
 
         if (token) {
@@ -52,8 +52,16 @@ export abstract class TokenChecker {
         }
     }
 
+    private getBearerToken(req: Request) {
+        return req.headers['authorization'] ? (req.headers['authorization'] as any).split(' ')[1] : undefined;
+    }
+
     protected getLoggedUserId(req: Request) : string {
         return req['decoded'].id;
+    }
+
+    protected getLoggedRole(req: Request) {
+        return req['decoded'].role;
     }
 
     protected getIdFromRequest(req: Request) {
@@ -63,6 +71,10 @@ export abstract class TokenChecker {
             return this.getLoggedUserId(req);
         }
         return id;
+    }
+
+    protected sendUnauthorizedMessage() {
+        
     }
 
     //TODO - Testar
