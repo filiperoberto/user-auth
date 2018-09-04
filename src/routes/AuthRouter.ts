@@ -73,6 +73,10 @@ class AuthRouter extends TokenChecker {
         return [];
     }
 
+    protected getIgnoredPathAndMethos(): RegExp[] {
+        return [];
+    }
+
 }
 
 const exportRoutes = new AuthRouter();

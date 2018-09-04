@@ -3,6 +3,7 @@ import {PeopleRepository} from '../server/db/queries/PeopleRepository';
 import { TokenChecker } from './TokenChecker';
 
 class PeopleRouter extends TokenChecker {
+    
     router: Router;
     private peopleRepository : PeopleRepository;
 
@@ -37,6 +38,10 @@ class PeopleRouter extends TokenChecker {
     }
 
     protected getIgnoredMethods() : string[] {
+        return [];
+    }
+
+    protected getIgnoredPathAndMethos(): RegExp[] {
         return [];
     }
 }

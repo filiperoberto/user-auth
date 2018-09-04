@@ -10,6 +10,7 @@ class UsersRouter extends TokenChecker {
     private getAll(req: Request, res: Response, next: NextFunction) {
 
         const role = this.getLoggedRole(req);
+        const filter = this.getFilter(req);
 
         if(role !== 'admin') {
             return res.status(401).send({
@@ -18,7 +19,7 @@ class UsersRouter extends TokenChecker {
             });
         }
 
-        this.repository.getAll().then(users => {
+        this.repository.getAll(filter).then(users => {
 
             return this.repository.count().then(count => {
                 res.send({ count : count[0].count , content : users});
@@ -60,6 +61,10 @@ class UsersRouter extends TokenChecker {
     }
 
     protected getIgnoredMethods() : string[] {
+        return [];
+    }
+
+    protected getIgnoredPathAndMethos(): RegExp[] {
         return [];
     }
 

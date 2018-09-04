@@ -1,12 +1,20 @@
 import * as Knex from 'knex';
+import { Filter } from '../../../util/filter';
 const knex : Knex = require('../Connection');
 const sha1 = require('sha1');
 const config = require('../../../config');
 
 export class UsersRepository {
 
-    public getAll() {
-        return knex.select('id','role','created','modified','name','website','description','picture','reputition').from('ck_users');
+    public getAll(filter : Filter) {
+        let query = knex.select('id','role','created','modified','name','website','description','picture','reputition')
+            .from('ck_users');
+
+            query.limit(filter.limit).offset(filter.offset);
+        
+        filter.orderBy.forEach(order => query.orderBy(order.orderBy, order.direction));
+
+        return query;
     }
 
     public count() {
