@@ -1,5 +1,6 @@
 import * as Knex from 'knex';
 import { Filter } from '../../../util/filter';
+import { User } from '../../../models/User';
 const knex : Knex = require('../Connection');
 const sha1 = require('sha1');
 const config = require('../../../config');
@@ -35,8 +36,8 @@ export class UsersRepository {
         return knex('ck_users').insert([{ username : username , password : hash, created : knex.fn.now(), modified : knex.fn.now(), email : username}]);
     }
 
-    public editProfile(id : string, name : string, website : string, description : string) {
-        let obj = this.getUpdateObject(name,website,description);
+    public editProfile(id : string, user: User) {
+        let obj = this.getUpdateObject(user);
         return knex('ck_users').update(obj).where('id',id);
     }
 
@@ -45,12 +46,13 @@ export class UsersRepository {
         return knex('ck_users').update({password : hash}).where('id',id);
     }
 
-    private getUpdateObject(name : string, website : string, description : string) {
+    private getUpdateObject(user: User) {
         let obj : any = {};
         obj.modified = knex.fn.now();
-        if(name) obj.name = name;
-        if(website) obj.website = website;
-        if(description) obj.description = description;
+        if(user.name) obj.name = user.name;
+        if(user.website) obj.website = user.website;
+        if(user.description) obj.description = user.description;
+        if(user.role) obj.role = user.role;
         return obj;
     }
 
