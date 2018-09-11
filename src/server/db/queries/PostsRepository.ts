@@ -1,5 +1,4 @@
 import * as Knex from 'knex';
-import { Filter } from '../../../util/filter';
 import { Post } from '../../../models/Post';
 import joinjs from 'join-js';
 import { PostFilter } from '../../../models/PostFilter';
