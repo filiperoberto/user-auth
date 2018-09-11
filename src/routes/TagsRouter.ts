@@ -1,9 +1,8 @@
-import {Router, Request, Response, NextFunction} from 'express';
+import { Request, Response, NextFunction} from 'express';
 import {TagsRepository} from '../server/db/queries/TagsRepository';
 import { TokenChecker } from './TokenChecker';
 
 class TagsRouter extends TokenChecker {
-    router: Router;
     private tagsRepository : TagsRepository;
 
     constructor() {
@@ -90,4 +89,4 @@ class TagsRouter extends TokenChecker {
 const tagsRoutes = new TagsRouter();
 tagsRoutes.init();
 
-export default tagsRoutes.router;
+export default tagsRoutes.getRouter();
