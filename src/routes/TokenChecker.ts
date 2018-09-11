@@ -30,7 +30,7 @@ export abstract class TokenChecker {
     }
 
     private checkOptionalToken(req: Request, res: Response, next: NextFunction) {
-        let token = req.body.token || req.query.token || req.headers['x-access-token'];
+        let token = req.body.token || req.query.token || req.headers['x-access-token'] || this.getBearerToken(req);;
         let secret = config.secret;
 
         if (token) {

@@ -2,6 +2,7 @@ import * as Knex from 'knex';
 import { Filter } from '../../../util/filter';
 import { Post } from '../../../models/Post';
 import joinjs from 'join-js';
+import { PostFilter } from '../../../models/PostFilter';
 const knex : Knex = require('../Connection');
 
 const resultMaps = [
@@ -29,7 +30,7 @@ const resultMaps = [
 
 export class PostsRepository {
 
-    public getAll(filter: Filter, like?: string) {
+    public getAll(filter: PostFilter, like?: string) {
 
         let query = knex('ck_posts').select('ck_posts.*','ck_users.id as autor_id','ck_users.name as autor_name','ck_tags.texto as tag_texto','ck_tags.classe as tag_classe','ck_tags.id as tag_id')
             .innerJoin('ck_users','ck_users.id','ck_posts.user_id')
@@ -42,8 +43,16 @@ export class PostsRepository {
                         .leftOuterJoin('ck_post_to_tag','ck_post_to_tag.post','ck_posts.id')
                         .leftOuterJoin('ck_tags','ck_post_to_tag.tag','ck_tags.id');
     
-                    if(filter['tag']) {
-                        q.where('ck_tags.id',filter['tag']);
+                    if(filter.tag) {
+                        q.where('ck_tags.id',filter.tag);
+                    }
+
+                    if(filter.user) {
+                        q.where(function(){
+                            this.where('ck_posts.user_id',filter.user).orWhere('ck_posts.public',1)
+                        })
+                    } else {
+                        q.where('ck_posts.public',1)
                     }
     
                     filter.orderBy.forEach(order => {
@@ -55,6 +64,27 @@ export class PostsRepository {
                     q.as('o');
                 })
             })
+        return query.then(resultSet => {
+            return joinjs.map(resultSet, resultMaps, 'postMap');
+        });
+    }
+
+    public findOne(id: number, userId : number) {
+
+        let query = knex('ck_posts').select('ck_posts.*','ck_users.id as autor_id','ck_users.name as autor_name','ck_tags.texto as tag_texto','ck_tags.classe as tag_classe','ck_tags.id as tag_id')
+            .innerJoin('ck_users','ck_users.id','ck_posts.user_id')
+            .leftOuterJoin('ck_post_to_tag','ck_post_to_tag.post','ck_posts.id')
+            .leftOuterJoin('ck_tags','ck_post_to_tag.tag','ck_tags.id')
+            .where({'ck_posts.id' : id});
+            
+        if(userId) {
+            query.where(function(){
+                this.where('ck_posts.user_id',userId).orWhere('ck_posts.public',1)
+            })
+        } else {
+            query.where('ck_posts.public',1)
+        }
+        
         return query.then(resultSet => {
             return joinjs.map(resultSet, resultMaps, 'postMap');
         });
@@ -73,12 +103,6 @@ export class PostsRepository {
 
         object.modified = knex.fn.now();
         return knex('ck_posts').update(object).where({'id' : id});
-    }
-
-    public findOne(id: number) {
-        return knex.select().from('ck_posts').where({id : id}).then(resultSet => {
-            return joinjs.map(resultSet, resultMaps, 'postMap');
-        });;
     }
 
     public count(like?: string) {

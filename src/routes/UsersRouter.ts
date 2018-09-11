@@ -90,7 +90,7 @@ class UsersRouter extends TokenChecker {
     }
 
     protected getIgnoredMethods() : string[] {
-        return [];
+        return ['OPTIONS'];
     }
 
     protected getIgnoredPathAndMethos(): RegExp[] {

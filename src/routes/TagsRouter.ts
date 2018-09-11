@@ -24,7 +24,7 @@ class TagsRouter extends TokenChecker {
 
     private findOne(req: Request, res: Response, next: NextFunction) {
 
-        const id = this.getIdFromRequest(req);
+        const id = req.params.id;
 
         this.doFindOne(id, res);
     }
@@ -37,7 +37,7 @@ class TagsRouter extends TokenChecker {
 
     private edit(req: Request, res: Response, next: NextFunction) {
 
-        const id = this.getIdFromRequest(req);
+        const id = req.params.id;
         const tag = req.body;
 
         if(!this.isAdmin(req)) {
@@ -78,7 +78,7 @@ class TagsRouter extends TokenChecker {
     }
 
     protected getIgnoredMethods() : string[] {
-        return [];
+        return ['OPTIONS'];
     }
 
     protected getIgnoredPathAndMethos(): RegExp[] {
