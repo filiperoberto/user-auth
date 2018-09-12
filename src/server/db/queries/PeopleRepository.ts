@@ -10,6 +10,9 @@ const resultMaps = [
             {name : 'version', mapId: 'versionMap', columnPrefix: 'ck_versions_'},
             {name : 'pai', mapId: 'versionMap', columnPrefix: 'pai_'},
             {name : 'mae', mapId: 'versionMap', columnPrefix: 'mae_'},
+        ],
+        collections : [
+            {name : 'filhos', mapId: 'versionMap', columnPrefix: 'filho_'}
         ]
     },
     {
@@ -28,6 +31,7 @@ export class PeopleRepository {
         let selectedAttributes = this.getAttributes('ck_versions');
         selectedAttributes = selectedAttributes.concat(this.getAttributes('pai'));
         selectedAttributes = selectedAttributes.concat(this.getAttributes('mae'));
+        selectedAttributes = selectedAttributes.concat(this.getAttributes('filho'));
         selectedAttributes.push('ck_pessoas.id')
 
         return knex('ck_pessoas')
@@ -61,6 +65,21 @@ export class PeopleRepository {
                 )
                 .as('mae')
                 ,'ck_versions.mae','mae.id_pessoa')
+            .leftOuterJoin(
+                    knex('ck_versions as p')
+                    .select('p.*')
+                    .innerJoin(
+                        knex('ck_versions as ppp')
+                            .select(knex.raw('max(ppp.id) as ppp_id'),'ppp.id_pessoa')
+                            .where('ppp.aprovada',1)
+                            .groupBy('ppp.id_pessoa')
+                            .as('ppp')
+                        ,'p.id'
+                        ,'ppp_id'
+                    )
+                    .as('filho')
+                ,knex.raw('ck_versions.id_pessoa = filho.mae or ck_versions.id_pessoa = filho.pai')
+            )
             .whereIn('ck_versions.id',function() {
                 this.max('ck_versions.id')
                 .from('ck_versions')
