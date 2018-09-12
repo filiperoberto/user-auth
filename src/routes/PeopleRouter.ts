@@ -16,12 +16,13 @@ class PeopleRouter extends TokenChecker {
 
         const filter = this.getFilter(req);
 
-        /*this.peopleRepository.getAll(filter).then( person => {
-            res.send(person);
-        }).catch( er => res.sendStatus(500))*/
+        this.peopleRepository.getAll(filter).then( person => {
+            return this.peopleRepository.count(filter).then(count => {
+                res.send({ count : count[0].count, content : person});
+            })
+        }).catch( er => res.status(500).send(er))
     }
 
-    
     protected getFilter(req: Request, defaultLimit?: number) : PeopleFilter {
         let filter = super.getFilter(req,defaultLimit) as PeopleFilter;
 
