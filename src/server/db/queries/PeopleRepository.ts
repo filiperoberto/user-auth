@@ -12,7 +12,8 @@ const resultMaps = [
             {name : 'mae', mapId: 'versionMap', columnPrefix: 'mae_'},
         ],
         collections : [
-            {name : 'filhos', mapId: 'versionMap', columnPrefix: 'filho_'}
+            {name : 'filhos', mapId: 'versionMap', columnPrefix: 'filho_'},
+            {name : 'conjuges', mapId: 'versionMap', columnPrefix: 'conjuge_'}
         ]
     },
     {
@@ -32,6 +33,7 @@ export class PeopleRepository {
         selectedAttributes = selectedAttributes.concat(this.getAttributes('pai'));
         selectedAttributes = selectedAttributes.concat(this.getAttributes('mae'));
         selectedAttributes = selectedAttributes.concat(this.getAttributes('filho'));
+        selectedAttributes = selectedAttributes.concat(this.getAttributes('conjuge'));
         selectedAttributes.push('ck_pessoas.id')
 
         return knex('ck_pessoas')
@@ -79,6 +81,24 @@ export class PeopleRepository {
                     )
                     .as('filho')
                 ,knex.raw('ck_versions.id_pessoa = filho.mae or ck_versions.id_pessoa = filho.pai')
+            )
+            .leftOuterJoin('ck_conjuges',function(){
+                this.on('ck_conjuges.marido','ck_versions.id_pessoa').orOn('ck_conjuges.mulher','ck_versions.id_pessoa')
+            })
+            .leftOuterJoin(
+                knex('ck_versions as p')
+                .select('p.*')
+                .innerJoin(
+                    knex('ck_versions as ppp')
+                        .select(knex.raw('max(ppp.id) as ppp_id'),'ppp.id_pessoa')
+                        .where('ppp.aprovada',1)
+                        .groupBy('ppp.id_pessoa')
+                        .as('ppp')
+                    ,'p.id'
+                    ,'ppp_id'
+                )
+                .as('conjuge')
+                ,knex.raw('(ck_conjuges.marido = conjuge.id_pessoa and ck_versions.id_pessoa = ck_conjuges.mulher) or (ck_conjuges.mulher = conjuge.id_pessoa and ck_versions.id_pessoa = ck_conjuges.marido)')
             )
             .whereIn('ck_versions.id',function() {
                 this.max('ck_versions.id')
