@@ -9,6 +9,7 @@ import AuthRouter from './routes/AuthRouter';
 import TagsRouter from './routes/TagsRouter';
 import PeopleRouter from './routes/PeopleRouter';
 import PostsRouter from './routes/PostsRouter';
+import CommentsRouter from './routes/CommentsRouter';
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -50,6 +51,7 @@ class App {
     this.express.use('/api/v1/tags', TagsRouter);
     this.express.use('/api/v1/people', PeopleRouter);
     this.express.use('/api/v1/posts', PostsRouter);
+    this.express.use('/api/v1/comments', CommentsRouter);
   }
 }
 
