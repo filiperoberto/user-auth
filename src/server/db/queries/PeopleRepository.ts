@@ -6,7 +6,7 @@ const resultMaps = [
     { 
         mapId: 'personMap',
         idProperty: 'id',
-        collections: [
+        associations: [
             {name : 'version', mapId: 'versionMap', columnPrefix: 'ck_versions_'},
             {name : 'pai', mapId: 'versionMap', columnPrefix: 'pai_'},
             {name : 'mae', mapId: 'versionMap', columnPrefix: 'mae_'},
