@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction} from 'express';
 import {PeopleRepository} from '../server/db/queries/PeopleRepository';
 import { TokenChecker } from './TokenChecker';
+import { PeopleFilter } from '../models/PeopleFilter';
 
 class PeopleRouter extends TokenChecker {
     
@@ -11,11 +12,25 @@ class PeopleRouter extends TokenChecker {
         this.peopleRepository = new PeopleRepository();
     }
 
-    /*private getAll(req: Request, res: Response, next: NextFunction) {
-        this.peopleRepository.getAll().then( person => {
+    private getAll(req: Request, res: Response, next: NextFunction) {
+
+        const filter = this.getFilter(req);
+
+        /*this.peopleRepository.getAll(filter).then( person => {
             res.send(person);
-        }).catch( er => res.sendStatus(500))
-    }*/
+        }).catch( er => res.sendStatus(500))*/
+    }
+
+    
+    protected getFilter(req: Request, defaultLimit?: number) : PeopleFilter {
+        let filter = super.getFilter(req,defaultLimit) as PeopleFilter;
+
+        if(req.query.name) {
+            filter.name = req.query.name;
+        }
+
+        return filter;
+    }
 
     private getById(req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
@@ -25,7 +40,7 @@ class PeopleRouter extends TokenChecker {
     }
 
     public init() {
-        //this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
+        this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
     }
 
