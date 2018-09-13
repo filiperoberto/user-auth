@@ -53,4 +53,49 @@ export class PeopleService {
             }).catch(er => reject({status : 500, error : er}))
         })
     }
+
+    public getDynamicTree(id: number){
+
+        return new Promise((resolve,reject) => {
+            this.peoplerepository.getAllForDynamicTree().then(people => {
+
+                let map = {};
+                let desiredNode;
+
+                for(let i = 0; i< people.length; i++) {
+
+                    let person = people[i];
+
+                    if(person.id == id) {
+                        desiredNode = person;
+                    }
+
+                    person.name = person.nome;
+                    delete person.nome;
+                    person.data = {};
+                    person.children = [];
+
+                    if(!person.pai) {
+                        continue;
+                    }
+
+                    if(!map[person.pai]) {
+                        map[person.pai] = [];
+                    }
+                    map[person.pai].push(person);
+                }
+
+                for(let i = 0; i< people.length; i++) {
+                    let person = people[i];
+
+                    if(map[person.id]) {
+                        person.children = map[person.id];
+                    }
+                    delete person.pai;
+                }
+
+                resolve(desiredNode);
+            }).catch(er => reject({status : 500, error : er}))
+        })
+    }
 }

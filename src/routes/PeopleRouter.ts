@@ -78,12 +78,19 @@ class PeopleRouter extends TokenChecker {
         }).catch( er => res.status(er.status).send(er.error))
     }
 
+    private dynamicTree(req: Request, res: Response, next: NextFunction) {
+        const id = req.params.id;
+        this.peopleService.getDynamicTree(id).then(people => {
+            res.send(people);
+        }).catch( er => res.status(er.status).send(er.error))
+    }
+
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
+        this.router.get('/dynamic/:id',(req: Request, res: Response, next: NextFunction) => this.dynamicTree(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
         this.router.put('/:id',(req: Request, res: Response, next: NextFunction) => this.edit(req,res,next));
         this.router.post('/',(req: Request, res: Response, next: NextFunction) => this.create(req,res,next));
-
     }
 
     protected getIgnoredPaths() : string[] {
@@ -95,7 +102,7 @@ class PeopleRouter extends TokenChecker {
     }
 
     protected getIgnoredPathAndMethos(): RegExp[] {
-        return [/GET\//, /GET\/\d+/];
+        return [/GET\//, /GET\/\d+/ ];
     }
 }
 

@@ -28,6 +28,26 @@ export class PeopleRepository {
 
     private attributes: string[] = ['id', 'version_number', 'citacoes', 'descricao', 'sinonimos', 'created', 'modified', 'aprovada', 'id_pessoa', 'user_id', 'idade_morte', 'idade_pai_nascimento', 'idade_mae_nascimento', 'sexo', 'linhagem_de_jesus', 'nome', 'rei', 'profeta', 'sacerdote', 'juiz', 'pai', 'mae'];
 
+    public getAllForDynamicTree() {
+        return knex('ck_pessoas')
+        .select('pessoa.id_pessoa as id','pessoa.nome','pessoa.pai')
+        .leftOuterJoin(
+            knex('ck_versions as p')
+                .select('p.*')
+                .innerJoin(
+                    knex('ck_versions as ppp')
+                        .select(knex.raw('max(ppp.id) as ppp_id'), 'ppp.id_pessoa')
+                        .where('ppp.aprovada', 1)
+                        .groupBy('ppp.id_pessoa')
+                        .as('ppp')
+                    , 'p.id'
+                    , 'ppp_id'
+                )
+                .as('pessoa')
+            , 'ck_pessoas.id', 'pessoa.id_pessoa')
+        .where('pessoa.sexo',1)
+    }
+
     public getAll(filter: PeopleFilter) {
         return this.fullQuery()
             .whereIn('ck_pessoas.id',function() {
