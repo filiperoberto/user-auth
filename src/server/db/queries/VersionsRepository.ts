@@ -9,7 +9,7 @@ const resultMaps = [
     {
         mapId: 'versionMap',
         idProperty: 'id',
-        properties: ['id', 'version_number', 'citacoes', 'descricao', 'sinonimos', 'created', 'modified', 'aprovada', 'id_pessoa', 'idade_morte', 'idade_pai_nascimento', 'idade_mae_nascimento', 'sexo', 'linhagem_de_jesus', 'nome', 'rei', 'profeta', 'sacerdote', 'juiz', 'pai', 'mae'],
+        properties: ['id', 'version_number', 'citacoes', 'descricao', 'sinonimos', 'created', 'modified', 'aprovada', 'id_pessoa', 'idade_morte', 'idade_pai_nascimento', 'idade_mae_nascimento', 'sexo', 'linhagem_de_jesus', 'nome', 'rei', 'profeta', 'sacerdote', 'juiz', 'pai', 'mae', 'comments'],
         associations: [
             {name : 'user', mapId: 'userMap', columnPrefix: 'user_'},
             {name : 'father', mapId: 'associatedVersionMap', columnPrefix: 'pai_'},
@@ -95,6 +95,7 @@ export class VersionsRepository {
         selectedAttributes = selectedAttributes.concat(this.getAttributes('mae'));
         selectedAttributes.push('ck_users.name as user_name');
         selectedAttributes.push('ck_users.id as user_id');
+        selectedAttributes.push('comments as pessoa_comments');
 
         return knex.select(selectedAttributes)
             .from('ck_versions as pessoa')
@@ -127,6 +128,14 @@ export class VersionsRepository {
                     )
                     .as('mae')
                 , 'pessoa.mae', 'mae.id_pessoa')
+            .leftOuterJoin(
+                knex('ck_comments')
+                    .select('ck_comments.version_id',knex.raw('count(ck_comments.id) as comments'))
+                    .groupBy('ck_comments.version_id')
+                    .as('comments')
+                    ,'pessoa.id',
+                    'comments.version_id'
+            )
     }
 
     private getAttributes(prefix: string): string[] {
