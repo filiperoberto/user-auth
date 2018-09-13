@@ -105,6 +105,10 @@ export class PeopleRepository {
             });
     }
 
+    public create() {
+        return knex('ck_pessoas').insert([{created : knex.fn.now(), nome : '-' }]);
+    }
+
     private fullQuery() {
         let selectedAttributes = this.getAttributes('pessoa');
         selectedAttributes = selectedAttributes.concat(this.getAttributes('pai'));

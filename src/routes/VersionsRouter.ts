@@ -35,6 +35,19 @@ class VersionsRouter extends TokenChecker {
         }).catch( er => res.status(500).send(er))
     }
 
+    private getMaxVersion(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt(req.params.id);
+
+        this.versionRepository.getLastVersionNumber(id).then( (version : any[]) => {
+            if(version.length > 0) {
+                res.send(version.pop());    
+            }
+            else {
+                res.sendStatus(404);
+            }
+        }).catch( er => res.status(500).send(er))
+    }
+
     protected getFilter(req: Request, defaultLimit?: number) : VersionsFilter {
         let filter = super.getFilter(req,defaultLimit) as VersionsFilter;
 
@@ -56,6 +69,7 @@ class VersionsRouter extends TokenChecker {
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
+        this.router.get('/max/:id',(req: Request, res: Response, next: NextFunction) => this.getMaxVersion(req,res,next));
     }
 
     protected getIgnoredPaths() : string[] {

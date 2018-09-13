@@ -2,14 +2,19 @@ import { Request, Response, NextFunction} from 'express';
 import {PeopleRepository} from '../server/db/queries/PeopleRepository';
 import { TokenChecker } from './TokenChecker';
 import { PeopleFilter } from '../models/PeopleFilter';
+import { PeopleService } from '../services/PeopleService';
+import { VersionsRepository } from '../server/db/queries/VersionsRepository';
+import { Version } from '../models/Version';
 
 class PeopleRouter extends TokenChecker {
     
     private peopleRepository : PeopleRepository;
+    private peopleService : PeopleService;
 
     constructor() {
         super();
         this.peopleRepository = new PeopleRepository();
+        this.peopleService = new PeopleService(this.peopleRepository,new VersionsRepository());
     }
 
     private getAll(req: Request, res: Response, next: NextFunction) {
@@ -44,9 +49,32 @@ class PeopleRouter extends TokenChecker {
         }).catch( er => res.status(500).send(er))
     }
 
+    private edit(req: Request, res: Response, next: NextFunction) {
+        const id = req.params.id;
+        const version = req.body as Version;
+        version.user_id = this.getLoggedUserId(req) as any;
+        version.aprovada = this.isAdmin(req);
+        this.peopleService.edit(version,id).then(version => {
+            res.send(version);
+        }).catch( er => res.status(er.status).send(er.error))
+    }
+
+    private create(req: Request, res: Response, next: NextFunction) {
+
+        const version = req.body as Version;
+        version.user_id = this.getLoggedUserId(req) as any;
+        version.aprovada = this.isAdmin(req);
+        this.peopleService.create(version).then(version => {
+            res.send(version);
+        }).catch( er => res.status(er.status).send(er.error))
+    }
+
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
+        this.router.put('/:id',(req: Request, res: Response, next: NextFunction) => this.edit(req,res,next));
+        this.router.post('/',(req: Request, res: Response, next: NextFunction) => this.create(req,res,next));
+
     }
 
     protected getIgnoredPaths() : string[] {

@@ -3,6 +3,7 @@ const knex : Knex = require('../Connection');
 import joinjs from 'join-js';
 import { Filter } from '../../../util/filter';
 import { VersionsFilter } from '../../../models/VersionsFilter';
+import { Version } from '../../../models/Version';
 
 const resultMaps = [
     {
@@ -58,6 +59,17 @@ export class VersionsRepository {
         if (filter.user && !filter.admin) {
             query.where('pessoa.user_id', filter.user);
         }
+    }
+
+    public getLastVersionNumber(person : number) {
+        return knex('ck_versions').max('version_number as version_number').where('id_pessoa',person);
+    }
+
+    public create(version : Version) {
+        delete version.id;
+        delete version.modified;
+        version.created = knex.fn.now() as any;
+        return knex('ck_versions').insert([version]);
     }
 
     public getById(id : number) {
