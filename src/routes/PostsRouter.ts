@@ -49,6 +49,11 @@ class PostsRouter extends TokenChecker {
     }
 
     private edit(req: Request, res: Response, next: NextFunction) {
+
+        if(this.isViewer(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
+
         const id = req.params.id;
         let post = req.body;
         const loggedUserId = this.getLoggedUserId(req) as any;
@@ -65,6 +70,11 @@ class PostsRouter extends TokenChecker {
     }
 
     private create(req: Request, res: Response, next: NextFunction) {
+
+        if(this.isViewer(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
+
         let post = req.body;
         const loggedUserId = this.getLoggedUserId(req) as any;
 

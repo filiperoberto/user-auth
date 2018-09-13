@@ -84,6 +84,11 @@ export abstract class TokenChecker {
         return role === 'admin';
     }
 
+    protected isViewer(req: Request) {
+        const role = this.getLoggedRole(req);
+        return role === 'viewer';
+    }
+
     protected getFilter(req: Request, defaultLimit?: number) : Filter {
         let filter = new Filter();
 

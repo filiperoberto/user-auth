@@ -50,6 +50,11 @@ class CommentsRouter extends TokenChecker {
     }
 
     private create(req: Request, res: Response, next: NextFunction) {
+
+        if(this.isViewer(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
+
         const comment = req.body;
         const loggedUser = this.getLoggedUserId(req) as any;
         const admin = this.isAdmin(req);
@@ -68,6 +73,11 @@ class CommentsRouter extends TokenChecker {
     }
 
     private edit(req: Request, res: Response, next: NextFunction) {
+
+        if(this.isViewer(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
+
         const id = parseInt(req.params.id);
         const comment = req.body;
         const loggedUser = this.getLoggedUserId(req) as any;

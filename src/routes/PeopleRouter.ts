@@ -50,6 +50,11 @@ class PeopleRouter extends TokenChecker {
     }
 
     private edit(req: Request, res: Response, next: NextFunction) {
+
+        if(this.isViewer(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
+
         const id = req.params.id;
         const version = req.body as Version;
         version.user_id = this.getLoggedUserId(req) as any;
@@ -60,6 +65,10 @@ class PeopleRouter extends TokenChecker {
     }
 
     private create(req: Request, res: Response, next: NextFunction) {
+
+        if(this.isViewer(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
 
         const version = req.body as Version;
         version.user_id = this.getLoggedUserId(req) as any;
