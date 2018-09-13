@@ -36,7 +36,11 @@ class PeopleRouter extends TokenChecker {
     private getById(req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         this.peopleRepository.getById(id).then( (person : any[]) => {
-            res.send(person[0]);
+            if(person.length > 0) {
+                res.send(person.pop());
+            } else {
+                res.sendStatus(404);
+            }
         }).catch( er => res.status(500).send(er))
     }
 
