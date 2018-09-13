@@ -85,6 +85,10 @@ export class PeopleService {
                     map[person.pai].push(person);
                 }
 
+                if(!desiredNode) {
+                    return reject({status: 404, error : {}});
+                }
+
                 for(let i = 0; i< people.length; i++) {
                     let person = people[i];
 
