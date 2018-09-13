@@ -18,13 +18,13 @@ module.exports = {
             directory: __dirname + '/src/server/db/seeds'
         }
     },
-    test : {
+    production : {
         client : 'mysql',
         connection : {
-            host : '127.0.0.1',
-            user : 'root',
-            password : 'root',
-            database : `${databaseName}_test`,
+            host : 'mysql.mapadareforma.com.br',
+            user : 'mapadareforma02',
+            password : 'ejzsMNQmD7Dyhe78',
+            database : 'mapadareforma02',
             charset: 'utf8'
         },
         migrations : {
