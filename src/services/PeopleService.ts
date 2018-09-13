@@ -62,10 +62,7 @@ export class PeopleService {
                 let map = {};
                 let desiredNode;
 
-                for(let i = 0; i< people.length; i++) {
-
-                    let person = people[i];
-
+                people.forEach(person => {
                     if(person.id == id) {
                         desiredNode = person;
                     }
@@ -74,29 +71,27 @@ export class PeopleService {
                     delete person.nome;
                     person.data = {};
                     person.children = [];
-
+    
                     if(!person.pai) {
-                        continue;
+                        return;
                     }
-
+    
                     if(!map[person.pai]) {
                         map[person.pai] = [];
                     }
                     map[person.pai].push(person);
-                }
+                });
 
                 if(!desiredNode) {
                     return reject({status: 404, error : {}});
                 }
 
-                for(let i = 0; i< people.length; i++) {
-                    let person = people[i];
-
+                people.forEach(person => {    
                     if(map[person.id]) {
                         person.children = map[person.id];
                     }
                     delete person.pai;
-                }
+                })
 
                 resolve(desiredNode);
             }).catch(er => reject({status : 500, error : er}))
