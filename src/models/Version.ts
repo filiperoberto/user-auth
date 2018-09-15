@@ -22,4 +22,5 @@ export interface Version {
     pai: number;
     mae: number;
     user_id: number;
+    conjuges?: number[];
 }
