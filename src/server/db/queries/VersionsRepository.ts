@@ -62,7 +62,7 @@ export class VersionsRepository {
     }
 
     public getLastVersion(person : number) {
-        return knex('ck_versions').select().where('id_pessoa',person).orderBy('id','desc');
+        return knex('ck_versions').select().where('id_pessoa',person).orderBy('id','desc').limit(1);
     }
 
     public create(version : Version) {
