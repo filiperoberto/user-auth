@@ -1,4 +1,4 @@
-import {Router, Request, Response, NextFunction} from 'express';
+import { Request, Response, NextFunction} from 'express';
 import {VersiclesRepository} from '../server/db/queries/VersiclesRepository';
 import { TokenChecker } from './TokenChecker';
 import { VersiclesFilter } from '../models/VersiclesFilter';
@@ -15,51 +15,57 @@ class VersiclesRouter extends TokenChecker {
         const filter = this.getFilter(req) as VersiclesFilter;
         filter.versao = req.params.vrs;
 
-        this.versiclesRepository.getByVersion(filter).then( (versicles : any[]) => {
-            res.send(versicles);
-        }).catch( er => res.sendStatus(500))
+        this.doGet(filter, res);
+    }
+
+    private doGet(filter: VersiclesFilter, res: Response) {
+        this.versiclesRepository.getByVersion(filter).then((versicles: any[]) => {
+
+            if(versicles.length === 0) {
+                res.sendStatus(404);
+            } else {
+                return this.versiclesRepository.count(filter).then(count => {
+                    res.send({count : count[0].count, content : versicles});
+                })
+            }
+
+        }).catch(er => res.status(500).send(er));
     }
 
     private getByVersionAndBook(req: Request, res: Response, next: NextFunction) {
-        const vrs = req.params.vrs;
-        const liv = req.params.liv;
+        const filter = this.getFilter(req) as VersiclesFilter;
+        filter.versao = req.params.vrs;
+        filter.livro = req.params.liv;
 
-        this.versiclesRepository.getByVersionAndBook(vrs,liv).then( (versicles : any[]) => {
-            res.send(versicles);
-        }).catch( er => res.sendStatus(500))
+        this.doGet(filter, res);
     }
 
     private getByVersionAndBookAndChapter(req: Request, res: Response, next: NextFunction) {
-        const vrs = req.params.vrs;
-        const liv = req.params.liv;
-        const cha = req.params.cha;
+        const filter = this.getFilter(req) as VersiclesFilter;
+        filter.versao = req.params.vrs;
+        filter.livro = req.params.liv;
+        filter.capitulo = req.params.cha;
 
-        this.versiclesRepository.getByVersionAndBookAndChapter(vrs, liv, cha).then( (versicles : any[]) => {
-            res.send(versicles);
-        }).catch( er => res.sendStatus(500))
+        this.doGet(filter, res);
     }
 
     private getByVersionAndBookAndChapterAndVersicle(req: Request, res: Response, next: NextFunction) {
-        const vrs = req.params.vrs;
-        const liv = req.params.liv;
-        const cha = req.params.cha;
+        const filter = this.getFilter(req) as VersiclesFilter;
+        filter.versao = req.params.vrs;
+        filter.livro = req.params.liv;
+        filter.capitulo = req.params.cha;
         const ver : string = req.params.ver;
 
         let versicles = ver.split('-').filter(val => val !== '');
         if(versicles.length >= 2) {
 
             let verIds = versicles.map( versicle => parseInt(versicle));
-
-            this.versiclesRepository.getByVersionAndBookAndChapterAndVersicles(vrs, liv, cha, [verIds[0], verIds[1]]).then( (versicles : any[]) => {
-                res.send(versicles);
-            }).catch( er => res.sendStatus(500))
-            
+            filter.versiculos = [verIds[0], verIds[1]];
         }
         else {
-            this.versiclesRepository.getByVersionAndBookAndChapterAndVersicle(vrs, liv, cha, ver).then( (versicles : any[]) => {
-                res.send(versicles);
-            }).catch( er => res.sendStatus(500))
+            filter.versiculo = parseInt(ver);
         }
+        this.doGet(filter, res);
     }
 
     public init() {

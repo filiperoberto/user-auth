@@ -6,5 +6,6 @@ export interface VersiclesFilter extends Filter {
     livro : string;
     capitulo: number;
     versiculo: number;
+    versiculos: [number, number];
 
 }
