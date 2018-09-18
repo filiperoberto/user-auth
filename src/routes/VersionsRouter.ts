@@ -1,3 +1,4 @@
+import { Version } from './../models/Version';
 import {Router, Request, Response, NextFunction} from 'express';
 import {VersionsRepository} from '../server/db/queries/VersionsRepository';
 import { TokenChecker } from './TokenChecker';
@@ -38,7 +39,7 @@ class VersionsRouter extends TokenChecker {
     private getMaxVersion(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id);
 
-        this.versionRepository.getLastVersionNumber(id).then( (version : any[]) => {
+        this.versionRepository.getLastVersion(id).then( (version : Version[]) => {
             if(version.length > 0) {
                 res.send(version.pop());    
             }

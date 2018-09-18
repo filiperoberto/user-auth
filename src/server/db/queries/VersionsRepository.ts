@@ -61,8 +61,8 @@ export class VersionsRepository {
         }
     }
 
-    public getLastVersionNumber(person : number) {
-        return knex('ck_versions').max('version_number as version_number').where('id_pessoa',person);
+    public getLastVersion(person : number) {
+        return knex('ck_versions').select().where('id_pessoa',person).orderBy('id','desc').limit(1);
     }
 
     public create(version : Version) {
