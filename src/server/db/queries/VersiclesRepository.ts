@@ -5,7 +5,14 @@ const knex : Knex = require('../Connection');
 export class VersiclesRepository {
 
     public getByVersion(filter : VersiclesFilter) {
-        let query = knex.select('versiculos.*')
+
+        let select = ['versiculos.ver_id as id', 'versiculos.ver_texto as texto','versiculos.ver_capitulo as capitulo','versiculos.ver_versiculo as versiculo',knex.raw(`'${filter.versao}' as versao`)];
+
+        if(filter.livro) {
+            select.push(knex.raw(`'${filter.livro}' as livro`))
+        }
+
+        let query = knex.select(select)
             .from('versiculos')
             .innerJoin('versoes','versiculos.ver_vrs_id','versoes.vrs_id')
             .innerJoin('livros','versiculos.ver_liv_id','livros.liv_id')
