@@ -46,7 +46,7 @@ class App {
     });
     this.express.use('/', router);
     this.express.use('/api/v1/versions', VersionsRouter);
-    //this.express.use('/api/v1/versicles', VersiclesRouter);
+    this.express.use('/api/v1/versicles', VersiclesRouter);
     this.express.use('/api/v1/users', UsersRouter);
     this.express.use('/api/v1/auth', AuthRouter);
     this.express.use('/api/v1/tags', TagsRouter);

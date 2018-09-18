@@ -1,19 +1,21 @@
 import {Router, Request, Response, NextFunction} from 'express';
 import {VersiclesRepository} from '../server/db/queries/VersiclesRepository';
+import { TokenChecker } from './TokenChecker';
+import { VersiclesFilter } from '../models/VersiclesFilter';
 
-class VersiclesRouter {
-    router: Router;
-    private repository : VersiclesRepository;
+class VersiclesRouter extends TokenChecker {
+    private versiclesRepository : VersiclesRepository;
 
     constructor() {
-        this.router = Router();
-        this.repository = new VersiclesRepository();
+        super();
+        this.versiclesRepository = new VersiclesRepository();
     }
 
     private getByVersion(req: Request, res: Response, next: NextFunction) {
-        const vrs = req.params.vrs;
+        const filter = this.getFilter(req) as VersiclesFilter;
+        filter.versao = req.params.vrs;
 
-        this.repository.getByVersion(vrs).then( (versicles : any[]) => {
+        this.versiclesRepository.getByVersion(filter).then( (versicles : any[]) => {
             res.send(versicles);
         }).catch( er => res.sendStatus(500))
     }
@@ -22,7 +24,7 @@ class VersiclesRouter {
         const vrs = req.params.vrs;
         const liv = req.params.liv;
 
-        this.repository.getByVersionAndBook(vrs,liv).then( (versicles : any[]) => {
+        this.versiclesRepository.getByVersionAndBook(vrs,liv).then( (versicles : any[]) => {
             res.send(versicles);
         }).catch( er => res.sendStatus(500))
     }
@@ -32,7 +34,7 @@ class VersiclesRouter {
         const liv = req.params.liv;
         const cha = req.params.cha;
 
-        this.repository.getByVersionAndBookAndChapter(vrs, liv, cha).then( (versicles : any[]) => {
+        this.versiclesRepository.getByVersionAndBookAndChapter(vrs, liv, cha).then( (versicles : any[]) => {
             res.send(versicles);
         }).catch( er => res.sendStatus(500))
     }
@@ -48,13 +50,13 @@ class VersiclesRouter {
 
             let verIds = versicles.map( versicle => parseInt(versicle));
 
-            this.repository.getByVersionAndBookAndChapterAndVersicles(vrs, liv, cha, [verIds[0], verIds[1]]).then( (versicles : any[]) => {
+            this.versiclesRepository.getByVersionAndBookAndChapterAndVersicles(vrs, liv, cha, [verIds[0], verIds[1]]).then( (versicles : any[]) => {
                 res.send(versicles);
             }).catch( er => res.sendStatus(500))
             
         }
         else {
-            this.repository.getByVersionAndBookAndChapterAndVersicle(vrs, liv, cha, ver).then( (versicles : any[]) => {
+            this.versiclesRepository.getByVersionAndBookAndChapterAndVersicle(vrs, liv, cha, ver).then( (versicles : any[]) => {
                 res.send(versicles);
             }).catch( er => res.sendStatus(500))
         }
@@ -66,9 +68,21 @@ class VersiclesRouter {
         this.router.get('/:vrs/:liv/:cha',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapter(req,res,next));
         this.router.get('/:vrs/:liv/:cha/:ver',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapterAndVersicle(req,res,next));
     }
+    
+    protected getIgnoredPaths() : string[] {
+        return [];
+    }
+
+    protected getIgnoredMethods() : string[] {
+        return ['OPTIONS','GET'];
+    }
+
+    protected getIgnoredPathAndMethos(): RegExp[] {
+        return [];
+    }
 }
 
 const versiclesRoutes = new VersiclesRouter();
 versiclesRoutes.init();
 
-export default versiclesRoutes.router;
+export default versiclesRoutes.getRouter();

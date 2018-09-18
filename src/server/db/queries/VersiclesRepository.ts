@@ -1,4 +1,6 @@
 import * as Knex from 'knex';
+import { Filter } from '../../../util/filter';
+import { VersiclesFilter } from '../../../models/VersiclesFilter';
 const knex : Knex = require('../Connection');
 
 export class VersiclesRepository {
@@ -9,12 +11,18 @@ export class VersiclesRepository {
         this.knex = knex;
     }
 
-    public getByVersion(version : string) {
-        return knex.select('versiculos.*')
+    public getByVersion(filter : VersiclesFilter) {
+        let query = knex.select('versiculos.*')
             .from('versiculos')
             .innerJoin('versoes','versiculos.ver_vrs_id','versoes.vrs_id')
-            .where('versoes.vrs_abbr',version)
-            .orderBy('ver_id','asc')
+            .where('versoes.vrs_abbr',filter.versao)
+            .orderBy('ver_id','asc');
+
+        query.limit(filter.limit).offset(filter.offset);
+        
+        filter.orderBy.forEach(order => query.orderBy(order.orderBy, order.direction))
+
+        return query;
     }
 
     public getByVersionAndBook(version : string, book : string) {
