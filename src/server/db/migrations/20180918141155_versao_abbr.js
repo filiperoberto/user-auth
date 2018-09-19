@@ -1,12 +1,12 @@
 exports.up = function(knex, Promise) {
 
     const livros = [
-        {vrs_id: 1, vrs_abbr : "ARIP"},
-        {vrs_id: 2, vrs_abbr : "ARC"},
-        {vrs_id: 3, vrs_abbr : "NVI"},
-        {vrs_id: 4, vrs_abbr : "SBB"},
-        {vrs_id: 5, vrs_abbr : "ARA"},
-        {vrs_id: 6, vrs_abbr : "UN"}
+        {vrs_id: 1, vrs_abbr : "arip"},
+        {vrs_id: 2, vrs_abbr : "arc"},
+        {vrs_id: 3, vrs_abbr : "nvi"},
+        {vrs_id: 4, vrs_abbr : "sbb"},
+        {vrs_id: 5, vrs_abbr : "ara"},
+        {vrs_id: 6, vrs_abbr : "un"}
       ];
 
       return knex.transaction((trx) => {
