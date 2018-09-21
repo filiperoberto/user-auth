@@ -35,6 +35,10 @@ class PeopleRouter extends TokenChecker {
             filter.name = req.query.name;
         }
 
+        if(req.query.sexo) {
+            filter.sexo = req.query.sexo;
+        }
+
         return filter;
     }
 
@@ -109,8 +113,17 @@ class PeopleRouter extends TokenChecker {
         }).catch(er => res.status(500).send(er))
     }
 
+    private list(req: Request, res: Response, next: NextFunction) {
+        const filter = this.getFilter(req);
+
+        this.peopleRepository.listPeople(filter).then(people => {
+            res.send(people);
+        }).catch(er => res.status(500).send(er))
+    }
+
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
+        this.router.get('/list',(req: Request, res: Response, next: NextFunction) => this.list(req,res,next));
         this.router.get('/dynamic/:id',(req: Request, res: Response, next: NextFunction) => this.dynamicTree(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
         this.router.get('/chart/names/:quantity',(req: Request, res: Response, next: NextFunction) => this.getMostCommonNames(req,res,next));

@@ -73,6 +73,10 @@ export class PeopleRepository {
                     if(filter.name) {
                         q.where('pessoa.nome','like',`%${filter.name}%`).orWhere('pessoa.sinonimos','like',`%${filter.name}%`)
                     }
+
+                    if(filter.sexo) {
+                        q.andWhere('pessoa.sexo',filter.sexo);
+                    }
     
                     filter.orderBy.forEach(order => {
                         q.orderBy(order.orderBy, order.direction);
@@ -109,6 +113,10 @@ export class PeopleRepository {
 
             if(filter.name) {
                 q.where('pessoa.nome','like',`%${filter.name}%`).orWhere('pessoa.sinonimos','like',`%${filter.name}%`)
+            }
+
+            if(filter.sexo) {
+                q.andWhere('pessoa.sexo',filter.sexo);
             }
 
             q.groupBy('ck_pessoas.id');
@@ -259,6 +267,30 @@ export class PeopleRepository {
             .groupBy('pessoa.sexo')
             .orderBy('count','desc')
             .limit(value)
+    }
+
+    public listPeople(filter: PeopleFilter) {
+        let query = knex('ck_pessoas')
+            .select('ck_pessoas.id','pessoa.nome')
+            .innerJoin(
+                knex('ck_versions as p')
+                    .select('p.*')
+                    .innerJoin(
+                        knex('ck_versions as ppp')
+                            .select(knex.raw('max(ppp.id) as ppp_id'), 'ppp.id_pessoa')
+                            .where('ppp.aprovada', 1)
+                            .groupBy('ppp.id_pessoa')
+                            .as('ppp')
+                        , 'p.id'
+                        , 'ppp_id'
+                    )
+                    .as('pessoa')
+                , 'ck_pessoas.id', 'pessoa.id_pessoa');
+
+        if(filter.sexo) {
+            query.where('pessoa.sexo',filter.sexo);
+        }
+        return query;
     }
 
     private getAttributes(prefix: string): string[] {
