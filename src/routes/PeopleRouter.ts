@@ -58,7 +58,7 @@ class PeopleRouter extends TokenChecker {
         const id = req.params.id;
         const version = req.body as Version;
         version.user_id = this.getLoggedUserId(req) as any;
-        version.aprovada = this.isAdmin(req);
+        version.aprovada = this.isAdmin(req) ? true : null;
         this.peopleService.edit(version,id).then(version => {
             res.send(version);
         }).catch( er => res.status(er.status).send(er.error))
@@ -72,7 +72,7 @@ class PeopleRouter extends TokenChecker {
 
         const version = req.body as Version;
         version.user_id = this.getLoggedUserId(req) as any;
-        version.aprovada = this.isAdmin(req);
+        version.aprovada = this.isAdmin(req) ? true : null;
         this.peopleService.create(version).then(version => {
             res.send(version);
         }).catch( er => res.status(er.status).send(er.error))
@@ -85,10 +85,37 @@ class PeopleRouter extends TokenChecker {
         }).catch( er => res.status(er.status).send(er.error))
     }
 
+    private getMostCommonNames(req: Request, res: Response, next: NextFunction) {
+        const quantity = req.params.quantity;
+
+        this.peopleRepository.getMostCommonNames(quantity).then(values => {
+            res.send(values);
+        }).catch(er => res.status(500).send(er))
+    }
+
+    private getCountByGenger(req: Request, res: Response, next: NextFunction) {
+        const quantity = req.params.quantity;
+
+        this.peopleRepository.countByGenger(quantity).then(values => {
+            res.send(values);
+        }).catch(er => res.status(500).send(er))
+    }
+
+    private count(req: Request, res: Response, next: NextFunction) {
+        const filter = this.getFilter(req);
+
+        this.peopleRepository.count(filter).then(count => {
+            res.send({ count : count[0].count });
+        }).catch(er => res.status(500).send(er))
+    }
+
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
         this.router.get('/dynamic/:id',(req: Request, res: Response, next: NextFunction) => this.dynamicTree(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
+        this.router.get('/chart/names/:quantity',(req: Request, res: Response, next: NextFunction) => this.getMostCommonNames(req,res,next));
+        this.router.get('/chart/genger/:quantity',(req: Request, res: Response, next: NextFunction) => this.getCountByGenger(req,res,next));
+        this.router.get('/chart/count',(req: Request, res: Response, next: NextFunction) => this.count(req,res,next));
         this.router.put('/:id',(req: Request, res: Response, next: NextFunction) => this.edit(req,res,next));
         this.router.post('/',(req: Request, res: Response, next: NextFunction) => this.create(req,res,next));
     }

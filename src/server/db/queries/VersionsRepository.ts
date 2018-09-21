@@ -138,6 +138,11 @@ export class VersionsRepository {
             )
     }
 
+    public edit(id : string, version: Version) {
+        version.modified = knex.fn.now() as any;
+        return knex('ck_versions').update(version).where('id',id);
+    }
+
     private getAttributes(prefix: string): string[] {
         let clone = this.attributes.slice(0);
         return clone.map(attr => `${prefix}.${attr} as ${prefix}_${attr}`);

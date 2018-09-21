@@ -67,10 +67,34 @@ class VersionsRouter extends TokenChecker {
         return filter;
     }
 
+    protected edit(req: Request, res: Response, next: NextFunction) {
+        if(!this.isAdmin(req)) {
+            return this.sendUnauthorizedMessage(res);
+        }
+
+        const id = req.params.id;
+
+        const version = {
+            aprovada : req.body.aprovada
+        } as any;
+
+        this.versionRepository.edit(id,version).then(() => {
+            return this.versionRepository.getById(id).then( (version : any[]) => {
+                if(version.length > 0) {
+                    res.send(version.pop());    
+                }
+                else {
+                    res.sendStatus(404);
+                }
+            })
+        }).catch( er => res.status(500).send(er))
+    }
+
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
         this.router.get('/max/:id',(req: Request, res: Response, next: NextFunction) => this.getMaxVersion(req,res,next));
+        this.router.put('/:id',(req: Request, res: Response, next: NextFunction) => this.edit(req,res,next));
     }
 
     protected getIgnoredPaths() : string[] {

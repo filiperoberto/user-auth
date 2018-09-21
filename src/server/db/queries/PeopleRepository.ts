@@ -31,7 +31,7 @@ export class PeopleRepository {
     public getAllForDynamicTree() {
         return knex('ck_pessoas')
         .select('pessoa.id_pessoa as id','pessoa.nome','pessoa.pai')
-        .leftOuterJoin(
+        .innerJoin(
             knex('ck_versions as p')
                 .select('p.*')
                 .innerJoin(
@@ -92,7 +92,7 @@ export class PeopleRepository {
         return knex.count('pessoa_id as count').from(function () {
 
             let q = this.select('ck_pessoas.id as pessoa_id','pessoa.*').from('ck_pessoas')
-                .leftOuterJoin(
+                .innerJoin(
                     knex('ck_versions as p')
                         .select('p.*')
                         .innerJoin(
@@ -139,7 +139,7 @@ export class PeopleRepository {
 
         return knex('ck_pessoas')
             .select(selectedAttributes)
-            .leftOuterJoin(
+            .innerJoin(
                 knex('ck_versions as p')
                     .select('p.*')
                     .innerJoin(
@@ -214,6 +214,51 @@ export class PeopleRepository {
                     .as('conjuge')
                 , knex.raw('(ck_conjuges.marido = conjuge.id_pessoa and pessoa.id_pessoa = ck_conjuges.mulher) or (ck_conjuges.mulher = conjuge.id_pessoa and pessoa.id_pessoa = ck_conjuges.marido)')
             )
+    }
+
+    public getMostCommonNames(value: number) {
+        return knex('ck_pessoas')
+            .select(knex.raw('count(ck_pessoas.id) as count'),'pessoa.nome')
+            .innerJoin(
+                knex('ck_versions as p')
+                    .select('p.*')
+                    .innerJoin(
+                        knex('ck_versions as ppp')
+                            .select(knex.raw('max(ppp.id) as ppp_id'), 'ppp.id_pessoa')
+                            .where('ppp.aprovada', 1)
+                            .groupBy('ppp.id_pessoa')
+                            .as('ppp')
+                        , 'p.id'
+                        , 'ppp_id'
+                    )
+                    .as('pessoa')
+                , 'ck_pessoas.id', 'pessoa.id_pessoa')
+            .groupBy('pessoa.nome')
+            .orderBy('count','desc')
+            .limit(value)
+    }
+
+    public countByGenger(value: number) {
+        return knex('ck_pessoas')
+            .select(knex.raw('count(ck_pessoas.id) as count'),'pessoa.sexo')
+            .innerJoin(
+                knex('ck_versions as p')
+                    .select('p.*')
+                    .innerJoin(
+                        knex('ck_versions as ppp')
+                            .select(knex.raw('max(ppp.id) as ppp_id'), 'ppp.id_pessoa')
+                            .where('ppp.aprovada', 1)
+                            .groupBy('ppp.id_pessoa')
+                            .as('ppp')
+                        , 'p.id'
+                        , 'ppp_id'
+                    )
+                    .as('pessoa')
+                , 'ck_pessoas.id', 'pessoa.id_pessoa')
+            .where(knex.raw('pessoa.sexo is not null'))
+            .groupBy('pessoa.sexo')
+            .orderBy('count','desc')
+            .limit(value)
     }
 
     private getAttributes(prefix: string): string[] {
