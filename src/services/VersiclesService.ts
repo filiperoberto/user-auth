@@ -13,30 +13,22 @@ export class VersiclesService {
 
         debugger;
 
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
 
             let promises = [];
-            let nextAndPrev : NextAndPrevVersicles = {}
+            let nextAndPrev: NextAndPrevVersicles = {}
 
-            if(filter.livro !== 'ap') {
-                promises.push(this.versiclesRepository.nextBook(filter));
-            }
-            if(filter.livro !== 'gn') {
-                promises.push(this.versiclesRepository.prevBook(filter));
-            }
+            promises.push(this.versiclesRepository.nextBook(filter));
+            promises.push(this.versiclesRepository.prevBook(filter));
 
-            Promise.all(promises).then(([next,prev]) => {
+            Promise.all(promises).then(([next, prev]) => {
 
-                if(filter.livro !== 'ap') {
+                if (next[0]) {
                     nextAndPrev.next = {
                         book: next[0].liv_abbr
                     }
-                } else {
-                    nextAndPrev.prev = {
-                        book: next[0].liv_abbr
-                    }
                 }
-                if(prev) {
+                if (prev[0]) {
                     nextAndPrev.prev = {
                         book: prev[0].liv_abbr
                     }
@@ -45,6 +37,38 @@ export class VersiclesService {
             })
 
         })
-        
+    }
+
+    public getNextAndPrevChapter(filter: VersiclesFilter): Promise<NextAndPrevVersicles> {
+
+        debugger;
+
+        return new Promise((resolve, reject) => {
+
+            let promises = [];
+            let nextAndPrev: NextAndPrevVersicles = {}
+
+            promises.push(this.versiclesRepository.nextChapter(filter));
+            promises.push(this.versiclesRepository.prevChapter(filter));
+
+            Promise.all(promises).then(([next, prev]) => {
+
+                if (next[0]) {
+                    nextAndPrev.next = {
+                        book: next[0].liv_abbr,
+                        chapter: next[0].ver_capitulo
+                    }
+                }
+                if (prev[0]) {
+                    nextAndPrev.prev = {
+                        book: prev[0].liv_abbr,
+                        chapter: prev[0].ver_capitulo
+                    }
+                }
+                resolve(nextAndPrev);
+            })
+
+        })
+
     }
 }

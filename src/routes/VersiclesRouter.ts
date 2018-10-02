@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction} from 'express';
-import {VersiclesRepository} from '../server/db/queries/VersiclesRepository';
+import { Request, Response, NextFunction } from 'express';
+import { VersiclesRepository } from '../server/db/queries/VersiclesRepository';
 import { TokenChecker } from './TokenChecker';
 import { VersiclesFilter } from '../models/VersiclesFilter';
 import { VersiclesService } from '../services/VersiclesService';
 import { NextAndPrevVersicles } from '../models/NextAndPrevVersicles';
 
 class VersiclesRouter extends TokenChecker {
-    private versiclesRepository : VersiclesRepository;
+    private versiclesRepository: VersiclesRepository;
     private versiclesService: VersiclesService;
 
     constructor() {
@@ -25,11 +25,11 @@ class VersiclesRouter extends TokenChecker {
     private doGet(filter: VersiclesFilter, res: Response, nextAndPrev: NextAndPrevVersicles = {}) {
         this.versiclesRepository.getByVersion(filter).then((versicles: any[]) => {
 
-            if(versicles.length === 0) {
+            if (versicles.length === 0) {
                 res.sendStatus(404);
             } else {
                 return this.versiclesRepository.count(filter).then(count => {
-                    res.send({count : count[0].count, content : versicles, next: nextAndPrev.next, prev: nextAndPrev.prev});
+                    res.send({ count: count[0].count, content: versicles, next: nextAndPrev.next, prev: nextAndPrev.prev });
                 })
             }
 
@@ -52,7 +52,9 @@ class VersiclesRouter extends TokenChecker {
         filter.livro = req.params.liv;
         filter.capitulo = req.params.cha;
 
-        this.doGet(filter, res);
+        this.versiclesService.getNextAndPrevChapter(filter).then(nextAndPrev => {
+            this.doGet(filter, res, nextAndPrev);
+        })
     }
 
     private getByVersionAndBookAndChapterAndVersicle(req: Request, res: Response, next: NextFunction) {
@@ -60,12 +62,12 @@ class VersiclesRouter extends TokenChecker {
         filter.versao = req.params.vrs;
         filter.livro = req.params.liv;
         filter.capitulo = req.params.cha;
-        const ver : string = req.params.ver;
+        const ver: string = req.params.ver;
 
         let versicles = ver.split('-').filter(val => val !== '');
-        if(versicles.length >= 2) {
+        if (versicles.length >= 2) {
 
-            let verIds = versicles.map( versicle => parseInt(versicle));
+            let verIds = versicles.map(versicle => parseInt(versicle));
             filter.versiculos = [verIds[0], verIds[1]];
         }
         else {
@@ -107,21 +109,21 @@ class VersiclesRouter extends TokenChecker {
     }
 
     public init() {
-        this.router.get('/:vrs(ara|nvi|arc)',(req: Request, res: Response, next: NextFunction) => this.getByVersion(req,res,next));
-        this.router.get('/:vrs(ara|nvi|arc)/:liv',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBook(req,res,next));
-        this.router.get('/:vrs(ara|nvi|arc)/:liv/:cha',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapter(req,res,next));
-        this.router.get('/:vrs(ara|nvi|arc)/:liv/:cha/:ver',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapterAndVersicle(req,res,next));
-        this.router.get('/books',(req: Request, res: Response) => this.listBooks(req,res));
-        this.router.get('/chapters/:vrs/:liv',(req: Request, res: Response) => this.listChapters(req,res));
-        this.router.get('/versicles/:vrs/:liv/:cha',(req: Request, res: Response) => this.listVersicles(req,res));
+        this.router.get('/:vrs(ara|nvi|arc)', (req: Request, res: Response, next: NextFunction) => this.getByVersion(req, res, next));
+        this.router.get('/:vrs(ara|nvi|arc)/:liv', (req: Request, res: Response, next: NextFunction) => this.getByVersionAndBook(req, res, next));
+        this.router.get('/:vrs(ara|nvi|arc)/:liv/:cha', (req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapter(req, res, next));
+        this.router.get('/:vrs(ara|nvi|arc)/:liv/:cha/:ver', (req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapterAndVersicle(req, res, next));
+        this.router.get('/books', (req: Request, res: Response) => this.listBooks(req, res));
+        this.router.get('/chapters/:vrs/:liv', (req: Request, res: Response) => this.listChapters(req, res));
+        this.router.get('/versicles/:vrs/:liv/:cha', (req: Request, res: Response) => this.listVersicles(req, res));
     }
-    
-    protected getIgnoredPaths() : string[] {
+
+    protected getIgnoredPaths(): string[] {
         return [];
     }
 
-    protected getIgnoredMethods() : string[] {
-        return ['OPTIONS','GET'];
+    protected getIgnoredMethods(): string[] {
+        return ['OPTIONS', 'GET'];
     }
 
     protected getIgnoredPathAndMethos(): RegExp[] {
