@@ -96,4 +96,39 @@ export class VersiclesRepository {
             .orderBy('ver_versiculo','asc');
     }
 
+    public nextBook(filter : VersiclesFilter) {
+        return knex.select('livros.liv_abbr')
+            .from('livros')
+            .whereIn('liv_id', function() {
+                this.select(knex.raw('liv_id + 1'))
+                    .from('livros')
+                    .where('liv_abbr',filter.livro)
+            })
+    }
+
+    public prevBook(filter : VersiclesFilter) {
+        return knex.select('livros.liv_abbr')
+            .from('livros')
+            .whereIn('liv_id', function() {
+                this.select(knex.raw('liv_id - 1'))
+                    .from('livros')
+                    .where('liv_abbr',filter.livro)
+            })
+    }
+
+    /*public nextChapter(filter: VersiclesFilter) {
+        return knex.select('ver_capitulo')
+            .from('versiculos')
+            .innerJoin('versoes','versiculos.ver_vrs_id','versoes.vrs_id')
+            .innerJoin('livros','versiculos.ver_liv_id','livros.liv_id')
+            .whereIn('ver_capitulo', function() {
+                this.select(knex.raw('ver_capitulo + 1'))
+                    .from('versiculos')
+                    .innerJoin('versoes','versiculos.ver_vrs_id','versoes.vrs_id')
+                    .innerJoin('livros','versiculos.ver_liv_id','livros.liv_id')
+                    .where('liv_abbr',filter.livro)
+                    .andWhere('versiculos.ver_capitulo', filter.capitulo)
+            })
+    }*/
+
 }

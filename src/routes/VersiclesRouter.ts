@@ -2,13 +2,17 @@ import { Request, Response, NextFunction} from 'express';
 import {VersiclesRepository} from '../server/db/queries/VersiclesRepository';
 import { TokenChecker } from './TokenChecker';
 import { VersiclesFilter } from '../models/VersiclesFilter';
+import { VersiclesService } from '../services/VersiclesService';
+import { NextAndPrevVersicles } from '../models/NextAndPrevVersicles';
 
 class VersiclesRouter extends TokenChecker {
     private versiclesRepository : VersiclesRepository;
+    private versiclesService: VersiclesService;
 
     constructor() {
         super();
         this.versiclesRepository = new VersiclesRepository();
+        this.versiclesService = new VersiclesService(this.versiclesRepository);
     }
 
     private getByVersion(req: Request, res: Response, next: NextFunction) {
@@ -18,14 +22,14 @@ class VersiclesRouter extends TokenChecker {
         this.doGet(filter, res);
     }
 
-    private doGet(filter: VersiclesFilter, res: Response) {
+    private doGet(filter: VersiclesFilter, res: Response, nextAndPrev: NextAndPrevVersicles = {}) {
         this.versiclesRepository.getByVersion(filter).then((versicles: any[]) => {
 
             if(versicles.length === 0) {
                 res.sendStatus(404);
             } else {
                 return this.versiclesRepository.count(filter).then(count => {
-                    res.send({count : count[0].count, content : versicles});
+                    res.send({count : count[0].count, content : versicles, next: nextAndPrev.next, prev: nextAndPrev.prev});
                 })
             }
 
@@ -37,7 +41,9 @@ class VersiclesRouter extends TokenChecker {
         filter.versao = req.params.vrs;
         filter.livro = req.params.liv;
 
-        this.doGet(filter, res);
+        this.versiclesService.getNextAndPrevBook(filter).then(nextAndPrev => {
+            this.doGet(filter, res, nextAndPrev);
+        })
     }
 
     private getByVersionAndBookAndChapter(req: Request, res: Response, next: NextFunction) {
