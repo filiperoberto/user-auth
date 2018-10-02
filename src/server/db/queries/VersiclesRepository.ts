@@ -70,4 +70,30 @@ export class VersiclesRepository {
         return query;
     }
 
+    public listBooks() {
+        return knex.select('liv_abbr as abbr','liv_nome as nome').from('livros');
+    }
+
+    public listChapters(filter : VersiclesFilter) {
+        return knex.select('ver_capitulo as chapter')
+            .from('versiculos')
+            .innerJoin('versoes','versiculos.ver_vrs_id','versoes.vrs_id')
+            .innerJoin('livros','versiculos.ver_liv_id','livros.liv_id')
+            .where('versoes.vrs_abbr',filter.versao)
+            .andWhere('livros.liv_abbr',filter.livro)
+            .groupBy('ver_capitulo')
+            .orderBy('ver_capitulo','asc');
+    }
+
+    public listVersicles(filter : VersiclesFilter) {
+        return knex.select('ver_versiculo as versiculo')
+            .from('versiculos')
+            .innerJoin('versoes','versiculos.ver_vrs_id','versoes.vrs_id')
+            .innerJoin('livros','versiculos.ver_liv_id','livros.liv_id')
+            .where('versoes.vrs_abbr',filter.versao)
+            .andWhere('livros.liv_abbr',filter.livro)
+            .andWhere('versiculos.ver_capitulo', filter.capitulo)
+            .orderBy('ver_versiculo','asc');
+    }
+
 }

@@ -68,11 +68,46 @@ class VersiclesRouter extends TokenChecker {
         this.doGet(filter, res);
     }
 
+    private listBooks(req: Request, res: Response) {
+        this.versiclesRepository
+            .listBooks()
+            .then(books => res.send(books))
+            .catch(er => res.status(500).send(er));
+    }
+
+    private listChapters(req: Request, res: Response) {
+
+        const filter = this.getFilter(req) as VersiclesFilter;
+        filter.versao = req.params.vrs;
+        filter.livro = req.params.liv;
+
+        this.versiclesRepository
+            .listChapters(filter)
+            .then(books => res.send(books))
+            .catch(er => res.status(500).send(er));
+    }
+
+    private listVersicles(req: Request, res: Response) {
+
+        const filter = this.getFilter(req) as VersiclesFilter;
+        filter.versao = req.params.vrs;
+        filter.livro = req.params.liv;
+        filter.capitulo = req.params.cha;
+
+        this.versiclesRepository
+            .listVersicles(filter)
+            .then(books => res.send(books))
+            .catch(er => res.status(500).send(er));
+    }
+
     public init() {
-        this.router.get('/:vrs',(req: Request, res: Response, next: NextFunction) => this.getByVersion(req,res,next));
-        this.router.get('/:vrs/:liv',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBook(req,res,next));
-        this.router.get('/:vrs/:liv/:cha',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapter(req,res,next));
-        this.router.get('/:vrs/:liv/:cha/:ver',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapterAndVersicle(req,res,next));
+        this.router.get('/:vrs(ara|nvi|arc)',(req: Request, res: Response, next: NextFunction) => this.getByVersion(req,res,next));
+        this.router.get('/:vrs(ara|nvi|arc)/:liv',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBook(req,res,next));
+        this.router.get('/:vrs(ara|nvi|arc)/:liv/:cha',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapter(req,res,next));
+        this.router.get('/:vrs(ara|nvi|arc)/:liv/:cha/:ver',(req: Request, res: Response, next: NextFunction) => this.getByVersionAndBookAndChapterAndVersicle(req,res,next));
+        this.router.get('/books',(req: Request, res: Response) => this.listBooks(req,res));
+        this.router.get('/chapters/:vrs/:liv',(req: Request, res: Response) => this.listChapters(req,res));
+        this.router.get('/versicles/:vrs/:liv/:cha',(req: Request, res: Response) => this.listVersicles(req,res));
     }
     
     protected getIgnoredPaths() : string[] {
