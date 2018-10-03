@@ -19,7 +19,7 @@ class PostsRouter extends TokenChecker {
         filtro.user = this.getLoggedUserId(req) as any;
 
         this.postRepository.getAll(filtro).then( posts => {
-            return this.postRepository.count().then(count => {
+            return this.postRepository.count(filtro).then(count => {
                 res.send({ count : count[0].count, content : posts });
             }).catch( er => res.status(500).send(er))
             

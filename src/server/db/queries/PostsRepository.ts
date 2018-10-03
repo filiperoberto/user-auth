@@ -31,7 +31,7 @@ const resultMaps = [
 
 export class PostsRepository {
 
-    public getAll(filter: PostFilter, like?: string) {
+    public getAll(filter: PostFilter) {
 
         let query = knex('ck_posts').select('ck_posts.*', 'ck_users.id as autor_id', 'ck_users.name as autor_name', 'ck_tags.texto as tag_texto', 'ck_tags.classe as tag_classe', 'ck_tags.id as tag_id')
             .innerJoin('ck_users', 'ck_users.id', 'ck_posts.user_id')
@@ -65,6 +65,11 @@ export class PostsRepository {
                     q.as('o');
                 })
             })
+
+            filter.orderBy.forEach(order => {
+                query.orderBy(order.orderBy, order.direction);
+            })
+
         return query.then(resultSet => {
             return joinjs.map(resultSet, resultMaps, 'postMap');
         });
@@ -106,11 +111,22 @@ export class PostsRepository {
         return knex('ck_posts').update(object).where({ 'id': id });
     }
 
-    public count(like?: string) {
-        let query = knex('ck_posts').count('id as count');
+    public count(filter: PostFilter) {
+        let query = knex('ck_posts').count('ck_posts.id as count')
 
-        if (like) {
-            query.andWhere('title', 'like', `%${like}%`)
+        if (filter.tag) {
+            query.leftOuterJoin('ck_post_to_tag', function () {
+                this.on('ck_post_to_tag.post', 'ck_posts.id').andOn('ck_post_to_tag.post', filter.tag)
+            })
+            .where('ck_tags.id', filter.tag);
+        }
+
+        if (filter.user) {
+            query.where(function () {
+                this.where('ck_posts.user_id', filter.user).orWhere('ck_posts.public', 1)
+            })
+        } else {
+            query.where('ck_posts.public', 1)
         }
         return query;
     }
