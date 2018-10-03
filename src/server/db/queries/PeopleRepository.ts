@@ -49,7 +49,7 @@ export class PeopleRepository {
     }
 
     public getAll(filter: PeopleFilter) {
-        return this.fullQuery()
+        let query = this.fullQuery()
             .whereIn('ck_pessoas.id',function() {
 
                 this.select('pessoa_id as id').from(function () {
@@ -87,7 +87,13 @@ export class PeopleRepository {
                     q.as('o');
                 })
 
-            }).then(resultSet => {
+            });
+
+            filter.orderBy.forEach(order => {
+                query.orderBy(order.orderBy, order.direction);
+            })
+            
+            return query.then(resultSet => {
                 return joinjs.map(resultSet, resultMaps, 'personMap');
             });
     }
