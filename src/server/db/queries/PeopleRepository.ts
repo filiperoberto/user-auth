@@ -90,6 +90,9 @@ export class PeopleRepository {
             });
 
             filter.orderBy.forEach(order => {
+                if(order.orderBy === 'id') {
+                    order.orderBy = 'pessoa.id';
+                }
                 query.orderBy(order.orderBy, order.direction);
             })
             
