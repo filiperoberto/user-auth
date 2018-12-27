@@ -58,6 +58,10 @@ class VersionsRouter extends TokenChecker {
 
         if(req.query.user) {
             filter.user = req.query.user;
+
+            if(filter.user === ('me' as any)) {
+                filter.user = this.getLoggedUserId(req) as any;
+            }
         }
 
         if(req.query.admin) {
