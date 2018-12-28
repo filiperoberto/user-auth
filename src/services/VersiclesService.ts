@@ -11,8 +11,6 @@ export class VersiclesService {
 
     public getNextAndPrevBook(filter: VersiclesFilter): Promise<NextAndPrevVersicles> {
 
-        debugger;
-
         return new Promise((resolve, reject) => {
 
             let promises = [];
@@ -40,8 +38,6 @@ export class VersiclesService {
     }
 
     public getNextAndPrevChapter(filter: VersiclesFilter): Promise<NextAndPrevVersicles> {
-
-        debugger;
 
         return new Promise((resolve, reject) => {
 
