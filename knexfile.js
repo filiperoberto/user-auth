@@ -1,4 +1,4 @@
-const databaseName = "genealogia";
+const databaseName = "userauth";
 
 module.exports = {
 
@@ -21,10 +21,10 @@ module.exports = {
     production : {
         client : 'mysql',
         connection : {
-            host : 'mysql.mapadareforma.com.br',
-            user : 'mapadareforma02',
-            password : 'ejzsMNQmD7Dyhe78',
-            database : 'mapadareforma02',
+            host : '',
+            user : '',
+            password : '',
+            database : '',
             charset: 'utf8'
         },
         migrations : {

@@ -9,80 +9,79 @@ class UsersRouter extends TokenChecker {
 
     private getAll(req: Request, res: Response, next: NextFunction) {
 
-        const filter = this.getFilter(req);
+        let filter = this.getFilter(req);
 
-        if(!this.isAdmin(req)) {
-            return this.sendUnauthorizedMessage(res);
+        if(!req.query.limit) {
+            filter.limit = 1000;
         }
 
         this.repository.getAll(filter).then(users => {
-
-            return this.repository.count().then(count => {
-                res.send({ count : count[0].count , content : users});
-            }) 
-        }).catch( er => res.status(500).send(er));
+            res.send(users);
+        }).catch( er => res.sendStatus(500))
     }
 
     private getById(req: Request, res: Response, next: NextFunction) {
+        const originalId = req.params.id;
         const id = this.getIdFromRequest(req);
-        const loggedUser = this.getLoggedUserId(req);
+        const logged = this.getLoggedUserId(req);
 
-        if(id != loggedUser && !this.isAdmin(req)) {
-            return this.sendUnauthorizedMessage(res);
-        }
+        this.repository.getById(id).then((users : any[]) => {
+            if(users && users.length > 0) {
+                if(originalId !== 'me') {
+                    delete users[0].email;
+                }
 
-        this.doGetById(id, res);
-    }
-
-    private doGetById(id: any, res: Response) {
-        return this.repository.getById(id).then(users => {
-            if (users && users.length > 0) {
                 res.send(users[0]);
-            }
-            else {
+            } else {
                 res.sendStatus(404);
             }
-        }).catch( er => res.status(500).send(er));
-    }
-
-    private editMyUserProfile(req: Request, res: Response, next: NextFunction) {
-
-        const user = req.body;
-        const id = this.getLoggedUserId(req);
-
-        this.doEditUser(user, req, id, res);
+        }).catch( er => res.sendStatus(500));
     }
 
     private editUserProfile(req: Request, res: Response, next: NextFunction) {
-        const user = req.body;
-        const id = this.getIdFromRequest(req);
-        const loggedUser = this.getLoggedUserId(req);
 
-        if(id != loggedUser && !this.isAdmin(req)) {
-            return this.sendUnauthorizedMessage(res);
+        let user = {
+            name : req.body.name,
+            website : req.body.website,
+            description : req.body.description,
+            latitude : req.body.latitude,
+            longitude : req.body.longitude,
+            email : req.body.email,
+            contact : req.body.contact,
+            birth : req.body.birth,
+            hidden : req.body.hidden,
+            notifications_enabled : req.body.notifications_enabled,
+            hidden_age : req.body.hidden_age
         }
 
-        this.doEditUser(user, req, id, res);
+        const id = this.getLoggedUserId(req);
+
+        this.repository.editProfile(id, user).then( data => {
+            res.sendStatus(201);
+        }).catch( er => res.sendStatus(500));
     }
 
-    private doEditUser(user: any, req: Request, id: any, res: Response) {
-        delete user.id;
-        delete user.created;
-        if (!this.isAdmin(req)) {
-            delete user.role;
-            delete user.reputition;
+    private getReputation(req: Request, res: Response, next: NextFunction) {
+        let id = req.params.id;
+
+        if(id === 'me') {
+            id = this.getLoggedUserId(req);
         }
-        this.repository.editProfile(id, user).then(data => {
-            res.status(201);
-            return this.doGetById(id, res);
-        }).catch(er => res.status(500).send(er));
+
+        this.repository.getReputation(id).then((users : any[]) => {
+            if(users.length > 0) {
+                res.json({reputation : users[0].reputation});
+            } else {
+                res.sendStatus(404);
+            }
+        }).catch( er => res.sendStatus(500))
     }
 
     public init() {
         this.router.get('/',(req: Request, res: Response, next: NextFunction) => this.getAll(req,res,next));
         this.router.get('/:id',(req: Request, res: Response, next: NextFunction) => this.getById(req,res,next));
-        this.router.put('/',(req: Request, res: Response, next: NextFunction) => this.editMyUserProfile(req,res,next));
         this.router.put('/:id',(req: Request, res: Response, next: NextFunction) => this.editUserProfile(req,res,next));
+        this.router.get('/reputation/:id',(req: Request, res: Response, next: NextFunction) => this.getReputation(req,res,next));
     }
 
     protected getIgnoredPaths() : string[] {
@@ -93,9 +92,10 @@ class UsersRouter extends TokenChecker {
         return ['OPTIONS'];
     }
 
-    protected getIgnoredPathAndMethos(): RegExp[] {
-        return [];
+    protected getIgnoredPathAndMethos() : RegExp[] {
+        return []
     }
+
 
 }
 

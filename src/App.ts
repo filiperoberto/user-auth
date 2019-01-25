@@ -2,14 +2,8 @@ import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import VersionsRouter from './routes/VersionsRouter';
-import VersiclesRouter from './routes/VersiclesRouter';
 import UsersRouter from './routes/UsersRouter';
 import AuthRouter from './routes/AuthRouter';
-import TagsRouter from './routes/TagsRouter';
-import PeopleRouter from './routes/PeopleRouter';
-import PostsRouter from './routes/PostsRouter';
-import CommentsRouter from './routes/CommentsRouter';
 import SystemRouter from './routes/SystemRouter';
 
 // Creates and configures an ExpressJS web server.
@@ -54,14 +48,8 @@ class App {
     });
     
     this.express.use('/', router);
-    this.express.use('/api/v1/versions', VersionsRouter);
-    this.express.use('/api/v1/versicles', VersiclesRouter);
     this.express.use('/api/v1/users', UsersRouter);
     this.express.use('/api/v1/auth', AuthRouter);
-    this.express.use('/api/v1/tags', TagsRouter);
-    this.express.use('/api/v1/people', PeopleRouter);
-    this.express.use('/api/v1/posts', PostsRouter);
-    this.express.use('/api/v1/comments', CommentsRouter);
     this.express.use('/api/v1/system', SystemRouter);
   }
 }
