@@ -1,5 +1,5 @@
 const environment = process.env.NODE_ENV;
-const url = process.env.FRONT_URL;
+const resetPasswordPage = process.env.RESET_PASSWORD_PAGE;
 import * as nodemailer from 'nodemailer';
 const config = require('../config');
 const pjson = require('../../package.json');
@@ -26,7 +26,7 @@ export class MailSender {
 
     public static sendPassRecoveryEmail(to: string, token: string): Promise<string> {
         let subject = `${pjson.name} - Trocar Senha`;
-        let text = `Para trocar sua senha clique em: <a href="${url}/#/reset/${token}">${url}/#/reset/${token}</a>`;
+        let text = `Para trocar sua senha clique em: <a href="${resetPasswordPage}/${token}">${resetPasswordPage}${token}</a>`;
         return this.sendEmail(to, subject, text);
     }
 
@@ -49,6 +49,7 @@ export class MailSender {
     private static send(mailOptions: nodemailer.SendMailOptions): Promise<string> {
 
         if(environment === 'development') {
+            console.warn("Development environment - Email not sent!");
             return Promise.resolve("");
         }
 

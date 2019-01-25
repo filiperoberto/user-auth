@@ -83,7 +83,7 @@ class AuthRouter extends TokenChecker {
         this.repository.setRandomNumber(username, random)
             .then(() => {
 
-                this.repository.getUserEmailByUsername(username).then(userEmail => {
+                return this.repository.getUserEmailByUsername(username).then(userEmail => {
 
                     if(userEmail.length > 0) {
 
