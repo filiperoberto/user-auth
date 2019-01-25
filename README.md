@@ -1,29 +1,43 @@
-# Genealogia Biblica API
+# User Auth
 
-### Creating a migration: ###
+A simple rest API with jwt auth. It uses express and knexjs to database access.
 
-```
-#!cmd
-knex migrate:make setup
-```
-### To apply your new migration: ###
 
+### Installing: ###
 
 ```
 #!cmd
+npm install
+```
+
+### To create user table: ###
+```
+#!cmd
+npm install -g knex
 knex migrate:latest
 ```
-### To make a change to your tables ###
+### Populate user table: ###
+```
+#!cmd
+knex seed:run
+```
 
+### To build application: ###
 
 ```
 #!cmd
-knex migrate:make step1
+gulp build
 ```
-
-### Rollback ###
+### Start Application ###
 
 ```
 #!cmd
-knex migrate:rollback
+npm start
+```
+
+### To test ###
+
+```
+#!cmd
+npm test
 ```
