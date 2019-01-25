@@ -1,6 +1,6 @@
 module.exports = {
-    secret : 'rustmanftw',
-    salt : 'rzl5wxovlzbjlcvljl1vuxuyaxrhfpvkq58pvdzg',
+    secret : 'etwas',
+    salt : 'fgfgfgfghfghfghfghrtyrtffghfghfgh',
     email: {
         host: '',
         port: '',
