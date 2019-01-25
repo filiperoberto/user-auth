@@ -1,7 +1,7 @@
-import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
+import * as compression from 'compression';
 import UsersRouter from './routes/UsersRouter';
 import AuthRouter from './routes/AuthRouter';
 import SystemRouter from './routes/SystemRouter';
@@ -21,6 +21,7 @@ class App {
 
   // Configure Express middleware.
   private middleware(): void {
+    this.express.use(compression());
     this.express.use(logger('dev'));
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({ extended: false }));
